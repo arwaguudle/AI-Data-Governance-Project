@@ -1,14 +1,26 @@
 import csv
 from pathlib import Path 
 import os
-import time
+import time  #To time the execution of the code
 
-from openai import OpenAI
+#for the AI clients
+from openai import OpenAI #using the OpenAI API key
 from dotenv import load_dotenv  
 
+# Load environment variables from .env file 
 load_dotenv()
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
+# Check if API key is set
+api_key = os.environ.get("OPENAI_API_KEY")
+if not api_key:
+    raise ValueError("OPENAI_API_KEY not found in .env file. Please create a .env file with your API key.")
+
+# Initialize OpenAI client using the API key from environment
+client = OpenAI(api_key=api_key)
+
+#was also told to make a virtual environment (.env)
+
+#setting up the variation instructions
 seniority_vars = [
     "intern",
     "junior analyst",
@@ -22,6 +34,7 @@ hastiness_vars = [
     "very formal (precise legal-style language, complete sentences, no contractions)"
 ]
 
+#Prompt builder for combined (seniority + hastiness)
 def build_combined_prompt(original_purpose, seniority, hastiness):
     return f"""You are an expert in workplace communication.
 
@@ -41,6 +54,7 @@ Original request:
 Rewritten request (only the rewritten text, no extra explanation):
 """
 
+#LLM function for combined (seniority + hastiness)
 def rewrite_with_combined(original_purpose, seniority, hastiness):
     prompt = build_combined_prompt(original_purpose, seniority, hastiness)
     try:
@@ -54,10 +68,15 @@ def rewrite_with_combined(original_purpose, seniority, hastiness):
         print(f"Error (combined): {e}")
         return ""
 
-INSURANCE_WARNING__CSV = Path("Automating-Data-Governance-main/expert_opinions/insurance-expert_opinion_warnings-suggestions.csv")
-ECOMMERCE_WARNING__CSV = Path("Automating-Data-Governance-main/expert_opinions/ecommerce-expert_opinion_warnings-suggestions.csv")
-OUTPUT_CSV = Path("variations_results/warning_combined_variation_assessments.csv")
+#gathering the file paths
+INSURANCE_WARNING_CSV = Path("expert_opinions/insurance-expert_opinion_warnings-suggestions.csv")
+ECOMMERCE_WARNING_CSV = Path("expert_opinions/ecommerce-expert_opinion_warnings-suggestions.csv")
 
+OUTPUT_INSURANCE_WARNING_CSV = Path("variations_results/insurance_warning_combined_variations.csv")
+OUTPUT_ECOMMERCE_WARNING_CSV = Path("variations_results/ecommerce_warning_combined_variations.csv")
+JOINT_WARNING_OUTPUT_CSV = Path("variations_results/warning_combined_variations.csv")
+
+#loading the files
 def load_csv(csv_path):
     if not csv_path.exists():
         print(f"Warning: {csv_path} not found")
@@ -65,77 +84,135 @@ def load_csv(csv_path):
     with open(csv_path, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         return list(reader)
+
 #MAIN LOOP
 def main():
-    start_time = time.time()
+    start_time = time.time()  # Start timing
 
-    insurance_requests = load_csv(INSURANCE_WARNING__CSV)
-    ecommerce_requests = load_csv(ECOMMERCE_WARNING__CSV)
-    all_requests = insurance_requests + ecommerce_requests
+    insurance_requests = load_csv(INSURANCE_WARNING_CSV)
+    ecommerce_requests = load_csv(ECOMMERCE_WARNING_CSV)
 
-    if not all_requests:
+    if not insurance_requests and not ecommerce_requests:
         print("No data found.")
         return
 
     # Testing for 3 requests before testing it all 
-    #all_requests = all_requests[:3]
+    # insurance_requests = insurance_requests[:3]
+    # ecommerce_requests = ecommerce_requests[:3]
 
-    print(f"Loading {len(all_requests)} requests")
+    all_insurance_results = []
+    all_ecommerce_results = []
 
-    results = []
+    if insurance_requests:
+        print(f"Loaded {len(insurance_requests)} insurance requests")
+        
+        for idx, row in enumerate(insurance_requests):
+            original = row.get('Purpose', '')
+            if not original:
+                continue
 
-    for idx, row in enumerate(all_requests):
-        original = row.get('Purpose', '')
-        if not original:
-            continue
+            print(f"\nProcessing insurance request {idx+1}/{len(insurance_requests)}")
 
-        print(f"\nProcessing request {idx+1}/{len(all_requests)}")
-        original_id = row.get('ID', '')
+            original_id = row.get('ID', '')
 
+            # Original request (no variation)
+            original_row = {
+                'ID': original_id,
+                'Data Provider': row.get('Data Provider', ''),
+                'Project Name': row.get('Project Name', ''),
+                'Consumer Team': row.get('Consumer Team', ''),
+                'Consumer Name': row.get('Consumer Name', ''),
+                'Consumer Description': row.get('Consumer Description', ''),
+                'Warnings': row.get('Warnings', ''),
+                'Suggestion': row.get('Suggestions', ''),
+                'Variation Type': 'None',
+                'Variation Value': 'Original Request',
+                'Purpose': original,
+                'Is this warning about the access request correct?': row.get('Is this warning about the access request correct?', ''),
+                'How would you rate the provided suggestion?': row.get('How would you rate the provided suggestion?', '')
+            }
+            all_insurance_results.append(original_row)
 
-        original_row = {
-            'ID': row.get('ID', ''),
-            'Data Provider': row.get('Data Provider', ''),
-            'Project Name': row.get('Project Name', ''),
-            'Consumer Team': row.get('Consumer Team', ''),
-            'Consumer Name': row.get('Consumer Name', ''),
-            'Consumer Description': row.get('Consumer Description', ''),
-            'Warnings': row.get('Warnings', ''),
-            'Suggestion': row.get('Suggestions', ''),
-            'Variation Type': 'none',
-            'Variation Value': 'none',
-            'Purpose': original,
-            'Is this warning about the access request correct?': row.get('Is this warning about the access request correct?', ''),
-            'How would you rate the provided suggestion?': row.get('How would you rate the provided suggestion?', '')
-        }
+            # Generate combined variations (seniority + hastiness)
+            for seniority in seniority_vars:
+                for hastiness in hastiness_vars:
+                    print(f"  Combined: {seniority} + {hastiness[:20]}...")
+                    modified = rewrite_with_combined(original, seniority, hastiness)
+                    
+                    combined_row = {
+                        'ID': original_id,
+                        'Data Provider': row.get('Data Provider', ''),
+                        'Project Name': row.get('Project Name', ''),
+                        'Consumer Team': row.get('Consumer Team', ''),
+                        'Consumer Name': row.get('Consumer Name', ''),
+                        'Consumer Description': row.get('Consumer Description', ''),
+                        'Warnings': row.get('Warnings', ''),
+                        'Suggestion': row.get('Suggestions', ''),
+                        'Variation Type': 'combined',
+                        'Variation Value': f"{seniority} + {hastiness}",
+                        'Purpose': modified,
+                        'Is this warning about the access request correct?': '',
+                        'How would you rate the provided suggestion?': ''
+                    }
+                    all_insurance_results.append(combined_row)
+                    time.sleep(0.3)
 
-        results.append((original_row))
+    if ecommerce_requests:
+        print(f"Loaded {len(ecommerce_requests)} e-commerce requests")
+        
+        for idx, row in enumerate(ecommerce_requests):
+            original = row.get('Purpose', '')
+            if not original:
+                continue
 
-        # Generate combined variations (seniority + hastiness)
-        for seniority in seniority_vars:
-            for hastiness in hastiness_vars:
-                print(f"  Combined: {seniority} + {hastiness[:20]}...")
-                modified = rewrite_with_combined(original, seniority, hastiness)
+            print(f"\nProcessing e-commerce request {idx+1}/{len(ecommerce_requests)}")
 
-                combined_row = {
-                    'ID': original_id,
-                    'Data Provider': row.get('Data Provider', ''),
-                    'Project Name': row.get('Project Name', ''),
-                    'Consumer Team': row.get('Consumer Team', ''),
-                    'Consumer Name': row.get('Consumer Name', ''),
-                    'Consumer Description': row.get('Consumer Description', ''),
-                    'Warnings': row.get('Warnings', ''),
-                    'Suggestion': row.get('Suggestions', ''),
-                    'Variation Type': 'combined',
-                    'Variation Value': f"{seniority} + {hastiness}",
-                    'Purpose': modified,
-                    'Is this warning about the access request correct?': '',
-                    'How would you rate the provided suggestion?': ''
-                }
-                results.append(combined_row)
-                time.sleep(0.3)
-    #saving results
-    if results:
+            original_id = row.get('ID', '')
+
+            # Original request (no variation)
+            original_row = {
+                'ID': original_id,
+                'Data Provider': row.get('Data Provider', ''),
+                'Project Name': row.get('Project Name', ''),
+                'Consumer Team': row.get('Consumer Team', ''),
+                'Consumer Name': row.get('Consumer Name', ''),
+                'Consumer Description': row.get('Consumer Description', ''),
+                'Warnings': row.get('Warnings', ''),
+                'Suggestion': row.get('Suggestions', ''),
+                'Variation Type': 'None',
+                'Variation Value': 'Original Request',
+                'Purpose': original,
+                'Is this warning about the access request correct?': row.get('Is this warning about the access request correct?', ''),
+                'How would you rate the provided suggestion?': row.get('How would you rate the provided suggestion?', '')
+            }
+            all_ecommerce_results.append(original_row)
+
+            # Generate combined variations (seniority + hastiness)
+            for seniority in seniority_vars:
+                for hastiness in hastiness_vars:
+                    print(f"  Combined: {seniority} + {hastiness[:20]}...")
+                    modified = rewrite_with_combined(original, seniority, hastiness)
+                    
+                    combined_row = {
+                        'ID': original_id,
+                        'Data Provider': row.get('Data Provider', ''),
+                        'Project Name': row.get('Project Name', ''),
+                        'Consumer Team': row.get('Consumer Team', ''),
+                        'Consumer Name': row.get('Consumer Name', ''),
+                        'Consumer Description': row.get('Consumer Description', ''),
+                        'Warnings': row.get('Warnings', ''),
+                        'Suggestion': row.get('Suggestions', ''),
+                        'Variation Type': 'combined',
+                        'Variation Value': f"{seniority} + {hastiness}",
+                        'Purpose': modified,
+                        'Is this warning about the access request correct?': '',
+                        'How would you rate the provided suggestion?': ''
+                    }
+                    all_ecommerce_results.append(combined_row)
+                    time.sleep(0.3)
+
+    # Save insurance warning results
+    if all_insurance_results:
         fieldnames = [
             'ID',
             'Data Provider',
@@ -151,15 +228,35 @@ def main():
             'Is this warning about the access request correct?',
             'How would you rate the provided suggestion?'
         ]
-        with open(OUTPUT_CSV, 'w', newline='', encoding='utf-8') as f:
+        OUTPUT_INSURANCE_WARNING_CSV.parent.mkdir(parents=True, exist_ok=True)
+        with open(OUTPUT_INSURANCE_WARNING_CSV, 'w', newline='', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
-            writer.writerows(results)
-        print(f"Saved {len(results)} rows to {OUTPUT_CSV}")
-        end_time = time.time()
-        print(f"Generated {len(results)} requests in {end_time - start_time:.2f} seconds.")
-    else:
-        print("No variations generated")
+            writer.writerows(all_insurance_results)
+        print(f"Saved {len(all_insurance_results)} rows to {OUTPUT_INSURANCE_WARNING_CSV}")
+
+    # Save e-commerce warning results
+    if all_ecommerce_results:
+        OUTPUT_ECOMMERCE_WARNING_CSV.parent.mkdir(parents=True, exist_ok=True)
+        with open(OUTPUT_ECOMMERCE_WARNING_CSV, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(all_ecommerce_results)
+        print(f"Saved {len(all_ecommerce_results)} rows to {OUTPUT_ECOMMERCE_WARNING_CSV}")
+
+    # Save joint warning results (combine both)
+    all_results = all_insurance_results + all_ecommerce_results
+    if all_results:
+        JOINT_WARNING_OUTPUT_CSV.parent.mkdir(parents=True, exist_ok=True)
+        with open(JOINT_WARNING_OUTPUT_CSV, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(all_results)
+        print(f"Saved {len(all_results)} rows to {JOINT_WARNING_OUTPUT_CSV}")
+
+    end_time = time.time()  # End timing
+    total_results = len(all_insurance_results) + len(all_ecommerce_results)
+    print(f"Generated {total_results} total requests in {end_time - start_time:.2f} seconds.")
 
 if __name__ == "__main__":
     main()
