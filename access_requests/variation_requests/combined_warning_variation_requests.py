@@ -54,8 +54,8 @@ def rewrite_with_combined(original_purpose, seniority, hastiness):
         print(f"Error (combined): {e}")
         return ""
 
-INSURANCE_WARNING__CSV = Path("/home/k21016258/Desktop/Data-Governance-Project/Automating-Data-Governance-main/expert_opinions/insurance-expert_opinion_warnings-suggestions.csv")
-ECOMMERCE_WARNING__CSV = Path("/home/k21016258/Desktop/Data-Governance-Project/Automating-Data-Governance-main/expert_opinions/ecommerce-expert_opinion_warnings-suggestions.csv")
+INSURANCE_WARNING__CSV = Path("Automating-Data-Governance-main/expert_opinions/insurance-expert_opinion_warnings-suggestions.csv")
+ECOMMERCE_WARNING__CSV = Path("Automating-Data-Governance-main/expert_opinions/ecommerce-expert_opinion_warnings-suggestions.csv")
 OUTPUT_CSV = Path("warning_combined_variation_assessments.csv")
 
 def load_csv(csv_path):
