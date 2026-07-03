@@ -1,0 +1,59 @@
+The access request was issued by the consumer. They want to access the data of the producer.
+Here are the details of the access request (ignore the dataUsageAgreement version).
+Focus on the purpose.
+
+<accessRequest>
+{accessRequest}
+</accessRequest>
+
+Analyze the given access request and additional data for possible reasons to reject the request.
+Ignore violations that are not relevant for granting the access request.
+
+Take the providing data product with its output port and related data contract into account. Ignore the pii field of the output port as this is deprecated. Only consider the PII information of the data contract itself.
+<providerDataProductWithOutputPort>
+{providerDataProductWithOutputPort}
+</providerDataProductWithOutputPort>
+<providerDataContract>
+{providerDataContract}
+</providerDataContract>
+<providerTeam>
+{providerTeam}
+</providerTeam>
+
+The consumer data product with referenced data contracts and team are also provided.
+<consumerDataProduct>
+{consumerDataProduct}
+</consumerDataProduct>
+<consumerDataContracts>
+{consumerDataContracts}
+</consumerDataContracts>
+<consumerTeam>
+{consumerTeam}
+</consumerTeam>
+
+The policies are global policies in the organization that can refer to teams, data products, data contracts etc.
+Do not check the policies. Check the data access request against the policies.
+<globalPolicies>
+{policies}
+</globalPolicies>
+
+Search the data for reasons to reject the access request. Do not list any kind of potential problem but only those
+that might be valid reasons to reject the request and thereby deny the consumer access to the data. Do not list
+general problems with data products. Their compliance with the given policies is checked elsewhere. Focus on the
+given access request. Your response is only used to decide if this request is approved or rejected.
+Ignore policies and potential problems that are not directly related to the access request, such as whether a team has no members.
+By default, all data products and teams are within the same country.
+
+It's ok if you do not find any problems. In that case, just leave the warnings empty.
+
+Only report severe problems. Don't be picky.
+
+Issue a separate warning for every potential problem you have found.
+
+If the warning is based on a policy violation add the key of the policy to the warning and set the title to the name of the policy. Reference the relevant section of the policy with the section number and the section name in the policy section field.
+
+If the warning is based on another reason, leave the policy key blank and choose an appropriate title (keep it short).
+
+If possible, provide a suggestion to improve the purpose so the data access request is less problematic. Add a suggestion in the purposeSuggestion field. (no more than 200 characters for the suggestion).
+
+In any case, the warning message should be a succinct summary of the problem you identified. Explain the reasoning behind the warning. (no more than 400 characters for the warning message).
