@@ -117,8 +117,8 @@ def main():
                 'Consumer Team': row.get('Consumer Team', ''),
                 'Consumer Name': row.get('Consumer Name', ''),
                 'Consumer Description': row.get('Consumer Description', ''),
-                'Variation Type': 'none',
-                'Variation Value': 'none',
+                'Variation Type': 'None',
+                'Variation Value': 'Original Request',
                 'Purpose': original,
                 'Realistic?': row.get('Realistic?', ''),
                 'Decision': row.get('Decision?', '')
