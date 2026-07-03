@@ -70,8 +70,8 @@ def evaluate(system_prompt, user_template, request):
         return "Error", str(e)
 
 #loading the file paths
-INPUT_CSV = Path("/home/k21016258/Desktop/Data-Governance-Project/Automating-Data-Governance-main/combined_variations.csv")   # one level up
-OUTPUT_CSV = Path("evaluation_results.csv")   # one level up
+INPUT_CSV = Path("variations_results/combined_variations.csv")   
+OUTPUT_CSV = Path("evaluation_results.csv")
 
 #loading the files
 def load_csv(csv_path):
