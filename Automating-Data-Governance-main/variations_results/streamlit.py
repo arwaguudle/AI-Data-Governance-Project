@@ -21,8 +21,8 @@ st.markdown("---")
 # Load data function with caching
 @st.cache_data
 def load_data():
-    normal_summary = pd.read_csv('evaluation_summary.csv')
-    warning_summary = pd.read_csv('warning_evaluation_summary.csv')
+    normal_summary = pd.read_csv('variations_results/evaluation_summary.csv')
+    warning_summary = pd.read_csv('variations_results/warning_evaluation_summary.csv')
     return normal_summary, warning_summary
 
 try:
@@ -31,12 +31,21 @@ except FileNotFoundError:
     st.error("❌ CSV files not found. Please make sure 'evaluation_summary.csv' and 'warning_evaluation_summary.csv' are in the same directory.")
     st.stop()
 
-# Convert percentage columns to float
-normal_summary['Acceptance Rate(%)'] = normal_summary['Acceptance Rate'].str.rstrip('%').astype(float)
-normal_summary['Rejection Rate(%)'] = normal_summary['Rejection Rate'].str.rstrip('%').astype(float)
-
-warning_summary['Acceptance Rate(%)'] = warning_summary['Acceptance Rate'].str.rstrip('%').astype(float)
-warning_summary['Rejection Rate(%)'] = warning_summary['Rejection Rate'].str.rstrip('%').astype(float)
+# Check column names and convert accordingly
+# The CSV has 'Acceptance Rate' and 'Rejection Rate' (no % sign)
+if 'Acceptance Rate' in normal_summary.columns:
+    normal_summary['Acceptance Rate(%)'] = normal_summary['Acceptance Rate'].str.rstrip('%').astype(float)
+    normal_summary['Rejection Rate(%)'] = normal_summary['Rejection Rate'].str.rstrip('%').astype(float)
+    
+    warning_summary['Acceptance Rate(%)'] = warning_summary['Acceptance Rate'].str.rstrip('%').astype(float)
+    warning_summary['Rejection Rate(%)'] = warning_summary['Rejection Rate'].str.rstrip('%').astype(float)
+else:
+    # If columns already have (%) in name
+    normal_summary['Acceptance Rate(%)'] = normal_summary['Acceptance Rate(%)'].astype(float)
+    normal_summary['Rejection Rate(%)'] = normal_summary['Rejection Rate(%)'].astype(float)
+    
+    warning_summary['Acceptance Rate(%)'] = warning_summary['Acceptance Rate(%)'].astype(float)
+    warning_summary['Rejection Rate(%)'] = warning_summary['Rejection Rate(%)'].astype(float)
 
 # Helper function to create pivot tables
 def create_pivot(df):
@@ -283,7 +292,7 @@ with tab4:
     
     # Load combined data for text analysis
     try:
-        df = pd.read_csv('combined_variations.csv')
+        df = pd.read_csv('variations_results/combined_variations.csv')
         
         # Filter for "very hasty" variations
         hasty_df = df[df['Variation Value'].str.contains('very hasty', case=False, na=False)]
@@ -323,7 +332,10 @@ with tab4:
         
         with col2:
             st.metric("Total Casual Words Found", len(casual_word_counts))
-            st.metric("Most Common", f"{sorted_casual[0][0]} ({sorted_casual[0][1]}×)" if sorted_casual else "N/A")
+            if sorted_casual:
+                st.metric("Most Common", f"{sorted_casual[0][0]} ({sorted_casual[0][1]}×)")
+            else:
+                st.metric("Most Common", "N/A")
         
         # Word cloud
         st.subheader("☁️ Word Cloud - Casual Words")
@@ -354,6 +366,8 @@ with tab4:
             
     except FileNotFoundError:
         st.warning("⚠️ 'combined_variations.csv' not found. Text analysis not available.")
+    except KeyError:
+        st.warning("⚠️ 'Purpose' column not found in combined_variations.csv. Text analysis not available.")
 
 # Tab 5: Summary Tables
 with tab5:
