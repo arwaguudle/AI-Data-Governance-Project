@@ -1,0 +1,16 @@
+Variation Type,Variation Value,Total,Accepted,Rejected,Acceptance Rate(%),Rejection Rate(%)
+None,Original Request,66,37,29,56.1,43.9
+combined,"executive/CEO + neutral (standard professional, no particular urgency or formality)",66,46,20,69.7,30.3
+combined,"executive/CEO + very formal (precise legal-style language, complete sentences, no contractions)",66,40,26,60.6,39.4
+combined,"executive/CEO + very hasty (typos, shorthand, missing punctuation, casual phrasing)",66,22,44,33.3,66.7
+combined,"intern + neutral (standard professional, no particular urgency or formality)",66,37,29,56.1,43.9
+combined,"intern + very formal (precise legal-style language, complete sentences, no contractions)",66,44,22,66.7,33.3
+combined,"intern + very hasty (typos, shorthand, missing punctuation, casual phrasing)",66,13,53,19.7,80.3
+combined,"junior analyst + neutral (standard professional, no particular urgency or formality)",66,33,33,50.0,50.0
+combined,"junior analyst + very formal (precise legal-style language, complete sentences, no contractions)",66,43,23,65.2,34.8
+combined,"junior analyst + very hasty (typos, shorthand, missing punctuation, casual phrasing)",66,16,50,24.2,75.8
+combined,"senior manager + neutral (standard professional, no particular urgency or formality)",66,40,26,60.6,39.4
+combined,"senior manager + very formal (precise legal-style language, complete sentences, no contractions)",66,43,23,65.2,34.8
+combined,"senior manager + very hasty (typos, shorthand, missing punctuation, casual phrasing)",66,23,43,34.8,65.2
+
+TOTAL,,858,437,421,50.9,49.1
