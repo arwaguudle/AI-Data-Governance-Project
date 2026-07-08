@@ -508,7 +508,7 @@ with st.container():
             use_container_width=True,
             type="primary"
         )
-    
+    #NEED TO REMOVE NAME BECAUSE ITS TOO MUCH DATA
     if submit_disabled:
         missing_names = []
         for field in missing_fields:
