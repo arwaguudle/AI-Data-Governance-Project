@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import datetime
+
 import json
 import os
 import numpy as np
@@ -14,6 +14,76 @@ st.set_page_config(
     page_icon="📝",
     layout="wide"
 )
+
+# Custom CSS for better styling
+st.markdown("""
+<style>
+    /* Fix for text visibility in info boxes */
+    .stInfo {
+        background-color: #f0f2f6 !important;
+        color: #1e1e1e !important;
+    }
+    .stInfo > div {
+        color: #1e1e1e !important;
+    }
+    
+    /* Request box styling */
+    .request-box {
+        background-color: #f8f9fa;
+        padding: 25px;
+        border-radius: 12px;
+        border-left: 5px solid #4CAF50;
+        color: #1e1e1e;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin: 10px 0;
+    }
+    .request-box p {
+        color: #1e1e1e !important;
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 0;
+    }
+    .request-box em {
+        color: #1e1e1e !important;
+    }
+    
+    /* Fix for dark mode compatibility */
+    .st-emotion-cache-1kyxreq {
+        color: #1e1e1e !important;
+    }
+    
+    /* Sidebar styling */
+    .sidebar-guidelines {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 10px 0;
+        color: #1e1e1e;
+    }
+    .sidebar-guidelines h4 {
+        color: #1e1e1e;
+    }
+    .sidebar-guidelines li {
+        color: #1e1e1e;
+    }
+    
+    /* Progress section */
+    .progress-section {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 10px 0;
+    }
+    
+    /* Radio button labels */
+    .stRadio > div {
+        gap: 10px;
+    }
+    .stRadio label {
+        color: #1e1e1e !important;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # Initialize session state
 if 'responses' not in st.session_state:
@@ -32,12 +102,16 @@ def load_access_requests():
     """Load the access requests from CSV"""
     try:
         # Try to load the combined variations file
-        df = pd.read_csv('combined_variations.csv')
+        df = pd.read_csv('variations_results/combined_variations.csv')
         return df
     except FileNotFoundError:
-        # If not found, create sample data
-        st.warning("⚠️ 'combined_variations.csv' not found. Using sample data.")
-        return create_sample_data()
+        # If not found, try current directory
+        try:
+            df = pd.read_csv('combined_variations.csv')
+            return df
+        except FileNotFoundError:
+            st.warning("⚠️ 'combined_variations.csv' not found. Using sample data.")
+            return create_sample_data()
 
 def create_sample_data():
     """Create sample access requests for testing"""
@@ -73,19 +147,6 @@ def create_sample_data():
     
     return pd.DataFrame(sample_data)
 
-def load_purpose_variations():
-    """Load purpose variations from existing data"""
-    try:
-        # Try to load the original data if it has Purpose column
-        df = pd.read_csv('combined_variations.csv')
-        if 'Purpose' in df.columns:
-            return df[['Variation Value', 'Purpose', 'Seniority', 'Hastiness']]
-    except:
-        pass
-    
-    # If not available, use sample data
-    return create_sample_data()
-
 # ============== SURVEY QUESTIONS ==============
 
 # Evaluation dimensions based on supervisor's feedback
@@ -95,7 +156,7 @@ EVALUATION_DIMENSIONS = [
         "question": "What level of seniority does this request appear to come from?",
         "description": "Rate based on the language, tone, and content of the request.",
         "options": ["Intern/Junior", "Junior Analyst", "Senior Manager", "Executive/CEO"],
-        "type": "seniority"  # Special handling for seniority
+        "type": "seniority"
     },
     {
         "id": "perceived_hastiness",
@@ -161,7 +222,6 @@ def map_rating_to_numeric(rating, dimension_type):
 
 def get_actual_values(row):
     """Extract actual seniority and hastiness from variation value"""
-    # Handle different formats
     value = row.get('Variation Value', '')
     if ' + ' in value:
         parts = value.split(' + ')
@@ -172,7 +232,16 @@ def get_actual_values(row):
 
 # ============== MAIN APP ==============
 
-st.title("📝 Access Request Evaluation Survey")
+# Title with custom styling
+st.markdown("""
+<h1 style='text-align: center; color: #2c3e50; margin-bottom: 10px;'>
+    📝 Access Request Evaluation Survey
+</h1>
+<p style='text-align: center; color: #7f8c8d; font-size: 16px;'>
+    Please evaluate each access request based on your perception
+</p>
+<hr>
+""", unsafe_allow_html=True)
 
 # Annotator registration
 if st.session_state.annotator_id is None:
@@ -183,16 +252,15 @@ if st.session_state.annotator_id is None:
     with col1:
         name = st.text_input("Your Name", placeholder="Enter your name")
     with col2:
-        role = st.selectbox("Your Role", ["Student", "Researcher", "Academic Staff", "Other"])
+        role = st.selectbox("Your Role", ["Student", "Researcher", "Academic Staff", "Industry Professional", "Other"])
     
-    if st.button("Start Evaluation"):
+    if st.button("🚀 Start Evaluation", type="primary"):
         if name.strip():
-            st.session_state.annotator_id = f"{name}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
             st.session_state.annotator_name = name
             st.session_state.annotator_role = role
             st.rerun()
         else:
-            st.error("Please enter your name.")
+            st.error("⚠️ Please enter your name.")
     st.stop()
 
 # Load data
@@ -202,14 +270,12 @@ df = load_access_requests()
 if 'Purpose' in df.columns:
     df = df[df['Purpose'].notna()]
 else:
-    # If no Purpose column, use Variation Value
     df['Purpose'] = df['Variation Value']
 
 # Get unique variations
 if 'Seniority' in df.columns and 'Hastiness' in df.columns:
     variations = df[['Seniority', 'Hastiness', 'Purpose', 'Variation Value']].drop_duplicates()
 else:
-    # Extract from Variation Value
     variations_data = []
     for _, row in df.iterrows():
         seniority, hastiness = get_actual_values(row)
@@ -233,7 +299,8 @@ if current_idx >= total_requests:
     st.session_state.survey_complete = True
 
 if st.session_state.survey_complete:
-    st.success("✅ Survey Complete! Thank you for your participation.")
+    st.balloons()
+    st.success("🎉 Survey Complete! Thank you for your participation!")
     
     # Show summary
     st.subheader("📊 Your Responses Summary")
@@ -242,17 +309,20 @@ if st.session_state.survey_complete:
         df_responses = pd.DataFrame(st.session_state.responses)
         
         # Show summary stats
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.metric("Total Evaluated", len(df_responses))
         with col2:
-            # Get average seniority perception
             seniority_scores = [r.get('perceived_seniority_numeric', 0) for r in st.session_state.responses]
             st.metric("Avg Perceived Seniority", f"{np.mean(seniority_scores):.2f}/4" if seniority_scores else "N/A")
         with col3:
-            # Get average hastiness perception
             hastiness_scores = [r.get('perceived_hastiness_numeric', 0) for r in st.session_state.responses]
             st.metric("Avg Perceived Hastiness", f"{np.mean(hastiness_scores):.2f}/5" if hastiness_scores else "N/A")
+        with col4:
+            decisions = [r.get('decision', '') for r in st.session_state.responses]
+            if decisions:
+                accept_rate = (decisions.count('Accept') / len(decisions)) * 100
+                st.metric("Accept Rate", f"{accept_rate:.1f}%")
         
         st.dataframe(df_responses, use_container_width=True)
         
@@ -265,7 +335,7 @@ if st.session_state.survey_complete:
             mime="text/csv"
         )
     
-    if st.button("🔄 Start New Survey"):
+    if st.button("🔄 Start New Survey", type="primary"):
         st.session_state.responses = []
         st.session_state.current_idx = 0
         st.session_state.survey_complete = False
@@ -280,30 +350,78 @@ current_variation = variations.iloc[current_idx]
 # Progress
 progress = (current_idx / total_requests) * 100
 st.progress(progress / 100)
-st.caption(f"Progress: {current_idx + 1} of {total_requests} requests ({progress:.0f}%)")
 
-# Annotator info
-st.sidebar.markdown(f"**Annotator:** {st.session_state.annotator_name}")
-st.sidebar.markdown(f"**Role:** {st.session_state.annotator_role}")
+# Progress text with styling
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.markdown(f"<p style='text-align: center; color: #7f8c8d;'>Progress: {current_idx + 1} of {total_requests} requests ({progress:.0f}%)</p>", unsafe_allow_html=True)
+
+# Annotator info in sidebar
+with st.sidebar:
+    st.markdown(f"**👤 Annotator:** {st.session_state.annotator_name}")
+    st.markdown(f"**📋 Role:** {st.session_state.annotator_role}")
+    st.divider()
 
 # Main content
 with st.container():
-    st.markdown(f"### Request {current_idx + 1} of {total_requests}")
+    # Request header with card style
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                padding: 15px 25px; 
+                border-radius: 10px; 
+                margin-bottom: 20px;">
+        <h3 style="color: white; margin: 0;">📌 Request {current_idx + 1} of {total_requests}</h3>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Display the access request
     col1, col2 = st.columns([1, 2])
     
     with col1:
         st.markdown("**📋 Request Details**")
-        st.info(f"**Seniority:** {current_variation['Seniority']}")
-        st.info(f"**Hastiness:** {current_variation['Hastiness']}")
+        
+        # Display seniority with color coding
+        seniority = current_variation['Seniority']
+        seniority_colors = {
+            "Intern": "#FF6B6B",
+            "Junior Analyst": "#FFA94D", 
+            "Senior Manager": "#4ECDC4",
+            "Executive/CEO": "#6C5CE7"
+        }
+        color = seniority_colors.get(seniority, "#95a5a6")
+        st.markdown(f"""
+        <div style="background-color: {color}20; padding: 8px 15px; border-radius: 8px; border-left: 4px solid {color}; margin: 5px 0;">
+            <strong>Seniority:</strong> {seniority}
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Display hastiness with color coding
+        hastiness = current_variation['Hastiness']
+        hastiness_colors = {
+            "Very Formal": "#2ecc71",
+            "Neutral": "#f39c12",
+            "Very Hasty": "#e74c3c"
+        }
+        color2 = hastiness_colors.get(hastiness, "#95a5a6")
+        st.markdown(f"""
+        <div style="background-color: {color2}20; padding: 8px 15px; border-radius: 8px; border-left: 4px solid {color2}; margin: 5px 0;">
+            <strong>Hastiness:</strong> {hastiness}
+        </div>
+        """, unsafe_allow_html=True)
     
     with col2:
         st.markdown("**📄 Access Request**")
+        
+        # Get the purpose text
+        purpose_text = current_variation.get('Purpose', current_variation.get('Variation Value', 'No description available.'))
+        
+        # Display with proper styling - using HTML with explicit colors
         st.markdown(
             f"""
-            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50;">
-                <p style="margin: 0; font-size: 16px;"><em>"{current_variation['Purpose']}"</em></p>
+            <div class="request-box">
+                <p style="color: #1e1e1e !important; font-size: 16px; line-height: 1.6; margin: 0;">
+                    <em style="color: #1e1e1e !important;">"{purpose_text}"</em>
+                </p>
             </div>
             """,
             unsafe_allow_html=True
@@ -318,28 +436,39 @@ with st.container():
     # Store responses for this request
     responses = {}
     
-    # Display each question
-    for dim in EVALUATION_DIMENSIONS:
-        st.markdown(f"**{dim['question']}**")
-        st.caption(dim['description'])
-        
-        response = st.radio(
-            dim['question'],
-            dim['options'],
-            key=f"{current_idx}_{dim['id']}",
-            index=None,
-            horizontal=True,
-            label_visibility="collapsed"
-        )
-        
-        if response:
-            responses[dim['id']] = response
-            responses[f"{dim['id']}_numeric"] = map_rating_to_numeric(response, dim['type'])
+    # Display each question in a card-like format
+    for i, dim in enumerate(EVALUATION_DIMENSIONS):
+        with st.container():
+            st.markdown(f"""
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 10px; margin: 10px 0;">
+                <p style="font-weight: 600; color: #2c3e50; margin: 0;">{dim['question']}</p>
+                <p style="font-size: 14px; color: #7f8c8d; margin: 5px 0 10px 0;">{dim['description']}</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            response = st.radio(
+                dim['question'],
+                dim['options'],
+                key=f"{current_idx}_{dim['id']}",
+                index=None,
+                horizontal=True,
+                label_visibility="collapsed"
+            )
+            
+            if response:
+                responses[dim['id']] = response
+                responses[f"{dim['id']}_numeric"] = map_rating_to_numeric(response, dim['type'])
     
-    # Decision question (Accept/Reject)
-    st.markdown("**✅ Decision**")
+    # Decision question
+    st.markdown("""
+    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 10px; margin: 10px 0;">
+        <p style="font-weight: 600; color: #2c3e50; margin: 0;">✅ Decision</p>
+        <p style="font-size: 14px; color: #7f8c8d; margin: 5px 0 10px 0;">Would you approve this access request?</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
     decision = st.radio(
-        "Would you approve this access request?",
+        "Decision",
         ["Accept", "Reject"],
         key=f"{current_idx}_decision",
         index=None,
@@ -366,15 +495,15 @@ with st.container():
     col1, col2, col3 = st.columns([1, 1, 1])
     
     with col2:
-        # Check if all required questions are answered
         required_fields = [dim['id'] for dim in EVALUATION_DIMENSIONS]
         required_fields.append('decision')
         missing_fields = [field for field in required_fields if field not in responses]
         
         submit_disabled = len(missing_fields) > 0
         
+        button_text = "✅ Submit & Next" if current_idx < total_requests - 1 else "✅ Submit & Finish"
         submit_button = st.button(
-            "✅ Submit & Next" if current_idx < total_requests - 1 else "✅ Submit & Finish",
+            button_text,
             disabled=submit_disabled,
             use_container_width=True,
             type="primary"
@@ -397,7 +526,6 @@ with st.container():
             "annotator_id": st.session_state.annotator_id,
             "annotator_name": st.session_state.annotator_name,
             "annotator_role": st.session_state.annotator_role,
-            "timestamp": datetime.datetime.now().isoformat(),
             "request_number": current_idx + 1,
             "actual_seniority": current_variation['Seniority'],
             "actual_hastiness": current_variation['Hastiness'],
@@ -406,8 +534,13 @@ with st.container():
         }
         st.session_state.responses.append(response_record)
         
+        # Show brief success message
+        st.toast("✅ Response saved!", icon="✅")
+        
         # Move to next request
         st.session_state.current_idx += 1
+        import time
+        time.sleep(0.5)
         st.rerun()
 
 # Sidebar - Progress and Info
@@ -418,32 +551,40 @@ with st.sidebar:
     completed = len(st.session_state.responses)
     st.metric("Completed", f"{completed}/{total_requests}")
     
+    # Progress bar in sidebar
+    sidebar_progress = completed / total_requests if total_requests > 0 else 0
+    st.progress(sidebar_progress)
+    
     # Show completed requests
     if st.session_state.responses:
-        st.markdown("**✅ Completed:**")
-        for resp in st.session_state.responses[-5:]:
+        st.markdown("**✅ Recent Completed:**")
+        for resp in st.session_state.responses[-3:]:
             st.caption(f"• #{resp['request_number']}: {resp['actual_seniority']} - {resp['actual_hastiness']}")
-        if len(st.session_state.responses) > 5:
-            st.caption(f"... and {len(st.session_state.responses) - 5} more")
+        if len(st.session_state.responses) > 3:
+            st.caption(f"... and {len(st.session_state.responses) - 3} more")
     
     st.divider()
     
+    # Guidelines in a nice box
     st.markdown("""
-    ### 📋 Evaluation Guidelines
-    
-    1. **Read** the access request carefully
-    2. **Rate** on each dimension based on your perception
-    3. **Decide** whether to Accept or Reject
-    4. **Comment** if you notice anything noteworthy
-    
-    ### 🎯 What to Look For
-    
-    - **Language style** (formal vs informal)
-    - **Completeness** of information
-    - **Urgency** conveyed
-    - **Professionalism** of the request
-    - **Trustworthiness** of the request
-    """)
+    <div class="sidebar-guidelines">
+        <h4>📋 Evaluation Guidelines</h4>
+        <ol>
+            <li><strong>Read</strong> the access request carefully</li>
+            <li><strong>Rate</strong> on each dimension based on your perception</li>
+            <li><strong>Decide</strong> whether to Accept or Reject</li>
+            <li><strong>Comment</strong> if you notice anything noteworthy</li>
+        </ol>
+        <h4>🎯 What to Look For</h4>
+        <ul>
+            <li><strong>Language style</strong> - formal vs informal</li>
+            <li><strong>Completeness</strong> - all necessary details?</li>
+            <li><strong>Urgency</strong> - time-sensitive?</li>
+            <li><strong>Professionalism</strong> - tone and structure</li>
+            <li><strong>Trustworthiness</strong> - would you approve?</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Export option
     if st.session_state.responses and st.button("📊 Export Progress"):
