@@ -71,7 +71,8 @@ def evaluate(system_prompt, user_template, request):
 
 #loading the file paths
 INPUT_CSV = Path("variations_results/combined_variations.csv")   
-OUTPUT_CSV = Path("evaluation_results.csv")
+OUTPUT_CSV = Path("variations_results/evaluation_results.csv")
+
 
 #loading the files
 def load_csv(csv_path):
@@ -123,7 +124,7 @@ def main():
         print(f"Summary: {accepted} Accepted, {rejected} Rejected")
 
         # Produce a seperate CSV file with summary of results (for presentation purposes)
-        summary_csv = Path("evaluation_summary.csv")
+        summary_csv = Path("variations_results/evaluation_summary.csv")
         with open(summary_csv, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             

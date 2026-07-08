@@ -73,7 +73,7 @@ def evaluate(system_prompt, user_template, request):
 #loading the file paths
 
 INPUT_CSV = Path("variations_results/warning_combined_variations.csv")   
-OUTPUT_CSV = Path("warning_evaluation_results.csv") 
+OUTPUT_CSV = Path("variations_results/warning_evaluation_results.csv")
 
 #loading the files
 def load_csv(csv_path):
