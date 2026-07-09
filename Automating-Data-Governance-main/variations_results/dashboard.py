@@ -43,23 +43,7 @@ else:
     warning_summary['Acceptance Rate(%)'] = warning_summary['Acceptance Rate(%)'].astype(float)
     warning_summary['Rejection Rate(%)'] = warning_summary['Rejection Rate(%)'].astype(float)
 
-''''
-#Giving the user an option to select which dataset to preview
-with st.sidebar:
-    st.header("Data")
-    
-    data_choice = st.selectbox(
-        "Select dataset to preview:",
-        ["Normal Summary", "Warning Summary"]
-    )
-    
-    if data_choice == "Normal Summary":
-        st.dataframe(normal_summary.head(10))
-        st.caption(f"Shape: {normal_summary.shape}")
-    else:
-        st.dataframe(warning_summary.head(10))
-        st.caption(f"Shape: {warning_summary.shape}")
-'''
+
 #Making a contents side bar
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "Results Summary",
@@ -87,7 +71,8 @@ with tab2:
     data_type = st.radio(
         "Select data type:",
         ["Normal Variations", "Warning Variations", "Both Variations"],
-        horizontal=True
+        horizontal=True,
+        key="bar_chart_data_type"
     )
     if data_type == "Normal Variations":
         plt.figure(figsize=(50, 6))
@@ -145,7 +130,8 @@ with tab3:
     data_type1 = st.radio(
         "Select Data type:",
         ["Normal Variations", "Warning Variations", "Both Variations"],
-        horizontal=True
+        horizontal=True,
+        key="pie_chart_data_type"
     )
 
     if data_type1 == "Normal Variations":
@@ -180,37 +166,37 @@ with tab3:
     else:
         col1, col2 = st.columns(2)
         
-    with col1:
-        st.subheader("Normal Variations")
-        normal_acceptance = normal_summary['Accepted'].sum()
-        normal_rejection = normal_summary['Rejected'].sum()
+        with col1:
+            st.subheader("Normal Variations")
+            normal_acceptance = normal_summary['Accepted'].sum()
+            normal_rejection = normal_summary['Rejected'].sum()
+            
+            fig, ax = plt.subplots(figsize=(6, 5))
+            ax.pie(
+                [normal_acceptance, normal_rejection], 
+                labels=['Accepted', 'Rejected'], 
+                autopct='%1.1f%%', 
+                startangle=90,
+                colors=['#2ecc71', '#e74c3c']
+            )
+            ax.set_title('Acceptance vs Rejection Rate for Normal Variations')
+            st.pyplot(fig)
         
-        fig, ax = plt.subplots(figsize=(6, 5))
-        ax.pie(
-            [normal_acceptance, normal_rejection], 
-            labels=['Accepted', 'Rejected'], 
-            autopct='%1.1f%%', 
-            startangle=90,
-            colors=['#2ecc71', '#e74c3c']
-        )
-        ax.set_title('Acceptance vs Rejection Rate for Normal Variations')
-        st.pyplot(fig)
-    
-    with col2:
-        st.subheader("Warning Variations")
-        warning_acceptance = warning_summary['Accepted'].sum()
-        warning_rejection = warning_summary['Rejected'].sum()
-        
-        fig, ax = plt.subplots(figsize=(6, 5))
-        ax.pie(
-            [warning_acceptance, warning_rejection], 
-            labels=['Accepted', 'Rejected'], 
-            autopct='%1.1f%%', 
-            startangle=90,
-            colors=['#2ecc71', '#e74c3c']
-        )
-        ax.set_title('Acceptance vs Rejection Rate for Warning Variations')
-        st.pyplot(fig)
+        with col2:
+            st.subheader("Warning Variations")
+            warning_acceptance = warning_summary['Accepted'].sum()
+            warning_rejection = warning_summary['Rejected'].sum()
+            
+            fig, ax = plt.subplots(figsize=(6, 5))
+            ax.pie(
+                [warning_acceptance, warning_rejection], 
+                labels=['Accepted', 'Rejected'], 
+                autopct='%1.1f%%', 
+                startangle=90,
+                colors=['#2ecc71', '#e74c3c']
+            )
+            ax.set_title('Acceptance vs Rejection Rate for Warning Variations')
+            st.pyplot(fig)
 
 
 #Tab 4- making a heatmap for acceptance and rejection rates
@@ -260,43 +246,131 @@ def create_pivot(df):
 normal_pivot = create_pivot(normal_summary)
 warning_pivot = create_pivot(warning_summary)
 
+# Create rejection pivot tables (100 - acceptance)
+normal_rejection_pivot = 100 - normal_pivot
+warning_rejection_pivot = 100 - warning_pivot
 
 #making the heatmaps
 with tab4:
     st.header("Heatmaps")
     #making a radio button for the user to select which data type to view
-    data_type = st.radio(
+    data_type2 = st.radio(
         "Select data type:",
         ["Normal Variations", "Warning Variations", "Both Variations"],
-        horizontal=True
+        horizontal=True,
+        key="heatmap_data_type"
     )
     #making another radio button for accpetance and rejection rates
-
-    rate_type = st.radio(
+    rate_type1 = st.radio(
         "Select rate type:",
         ["Acceptance Rate", "Rejection Rate"],
-        horizontal=True
+        horizontal=True,
+        key="heatmap_rate_type"
     )
 
-    if data_type == "Normal Variations":
-        fig, ax = plt.subplots(figsize=(10, 6))
-        sns.heatmap(normal_pivot, annot=True, fmt=".2f", cmap="YlGnBu", ax=ax)
-        ax.set_title("Acceptance Rate Heatmap for Normal Variations")
-        st.pyplot(fig)
-
-    elif data_type == "Warning Variations":
-        fig, ax = plt.subplots(figsize=(10, 6))
-        sns.heatmap(warning_pivot, annot=True, fmt=".2f", cmap="YlGnBu", ax=ax)
-        ax.set_title("Acceptance Rate Heatmap for Warning Variations")
-        st.pyplot(fig)
-
+    # Select the correct pivot based on rate type
+    if rate_type1 == "Acceptance Rate":
+        normal_pivot_display = normal_pivot
+        warning_pivot_display = warning_pivot
+        title_suffix = "Acceptance Rate"
+        cmap = "YlGnBu"
     else:
+        normal_pivot_display = normal_rejection_pivot
+        warning_pivot_display = warning_rejection_pivot
+        title_suffix = "Rejection Rate"
+        cmap = "YlOrRd"
+
+    if data_type2 == "Normal Variations":
         fig, ax = plt.subplots(figsize=(10, 6))
-        sns.heatmap(normal_pivot, annot=True, fmt=".2f", cmap="YlGnBu", ax=ax)
-        ax.set_title("Acceptance Rate Heatmap for Normal Variations")
+        sns.heatmap(normal_pivot_display, annot=True, fmt=".1f", cmap=cmap, vmin=0, vmax=100, ax=ax)
+        ax.set_title(f"{title_suffix} Heatmap for Normal Variations")
         st.pyplot(fig)
 
+    elif data_type2 == "Warning Variations":
         fig, ax = plt.subplots(figsize=(10, 6))
-        sns.heatmap(warning_pivot, annot=True, fmt=".2f", cmap="YlGnBu", ax=ax)
-        ax.set_title("Acceptance Rate Heatmap for Warning Variations")
+        sns.heatmap(warning_pivot_display, annot=True, fmt=".1f", cmap=cmap, vmin=0, vmax=100, ax=ax)
+        ax.set_title(f"{title_suffix} Heatmap for Warning Variations")
         st.pyplot(fig)
+
+    else:  # Both Variations
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.subheader("Normal Variations")
+            fig, ax = plt.subplots(figsize=(8, 5))
+            sns.heatmap(normal_pivot_display, annot=True, fmt=".1f", cmap=cmap, vmin=0, vmax=100, ax=ax)
+            ax.set_title(f"{title_suffix} Heatmap for Normal Variations")
+            st.pyplot(fig)
+        
+        with col2:
+            st.subheader("Warning Variations")
+            fig, ax = plt.subplots(figsize=(8, 5))
+            sns.heatmap(warning_pivot_display, annot=True, fmt=".1f", cmap=cmap, vmin=0, vmax=100, ax=ax)
+            ax.set_title(f"{title_suffix} Heatmap for Warning Variations")
+            st.pyplot(fig)
+# Tab 5- text analysis for the variations
+with tab5:
+    st.header("Text Analysis")
+    data_type2 = st.radio(
+        "Select data type:",
+        ["Normal Variations", "Warning Variations", "Both Variations"],
+        horizontal=True,
+        key="text_data_type"
+    )
+    if data_type2 == "Normal Variations":
+        st.subheader("Normal Variations")
+
+
+        df = pd.read_csv('variations_results/combined_variations.csv')
+
+        # Filter for "very hasty" variations
+        hasty_df = df[df['Variation Value'].str.contains('very hasty', case=False, na=False)]
+
+        # Get text from Purpose column
+        text = ' '.join(hasty_df['Purpose'].dropna().astype(str))
+
+        # Clean and split
+        cleaned = re.sub(r'[^\w\s]', '', text.lower())
+        words = cleaned.split()
+
+        # Count all words
+        all_word_counts = Counter(words)
+
+        # Define the casual/informal words you want to track
+        casual_words = [
+            'gotta', 'stuff', 'ppl', 'like', 'wanna', 'gonna', 'thx', 'thanks', 'hey', 
+            'asap', 'pls', 'please', 'cool', 'yeah', 'ok', 'okay', 'btw', 'lol', 'omg',
+            'u', 'ur', 'r', '2', '4', 'tho', 'though', 'dont', 'dunno', 'kinda', 
+            'sorta', 'cuz', 'cause', 'gimme', 'lemme', 'nah', 'yep', 'nope', 'ya',
+            'bro', 'guys', 'folks', 'peeps', 'team', 'quick', 'fast', 'pronto',
+            'basically', 'actually', 'literally', 'seriously', 'honestly'
+        ]
+
+        # Filter to only show casual words that appear in the data
+        casual_word_counts = {word: count for word, count in all_word_counts.items() 
+                            if word in casual_words and count > 0}
+
+        # Sort by frequency
+        sorted_casual = sorted(casual_word_counts.items(), key=lambda x: x[1], reverse=True)
+
+        # Filter casual words only
+        casual_word_freq = {word: count for word, count in all_word_counts.items() 
+                            if word in casual_words and count > 5}
+
+        wordcloud = WordCloud(
+            width=800,
+            height=400,
+            background_color='white',
+            colormap='rocket',
+            max_words=50
+        ).generate_from_frequencies(casual_word_freq)
+
+        plt.figure(figsize=(12, 6))
+        plt.imshow(wordcloud, interpolation='bilinear')
+        plt.axis('off')
+        plt.title('Casual Words in Very Hasty Variations', fontsize=14, fontweight='bold')
+        plt.tight_layout()
+        st.pyplot(fig)
+
+
+    
