@@ -43,6 +43,7 @@ Guidelines:
 - Only change the tone, wording, and formality.
 - Make it appropriate for a {seniority} employee.
 - Output ONLY the rewritten request.
+- DO NOT include any signature, title, or position at the end.
 
 Original request:
 "{original_purpose}"
