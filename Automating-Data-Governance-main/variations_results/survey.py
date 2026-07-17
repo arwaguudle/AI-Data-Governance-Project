@@ -1,94 +1,165 @@
 import streamlit as st
 import pandas as pd
-import random
 from pathlib import Path
+import random #to generating random variations of the survey
 
-# Load survey items
+
+#loading the dataset for the survey
 @st.cache_data
-def load_items():
-    df = pd.read_csv('data/survey_items.csv')
-    # Filter to only realistic requests
-    # df = df[df['Realistic'] == 'Yes']  # Adjust based on your column name
-    return df.to_dict('records')
+def load_survey_data():
+    df = pd.read_csv('variations_results/evaluation_results.csv')
+    return df
 
-# Initialize session state
-if 'items' not in st.session_state:
-    all_items = load_items()
-    random.shuffle(all_items)
-    st.session_state.items = all_items[:50]  # 50 items per user
-    st.session_state.current_index = 0
-    st.session_state.results = []  # Store annotations
-    st.session_state.user_id = f"user_{random.randint(1000, 9999)}"
+#initialising the session state
+def init_session_state():
+    df = load_survey_data()
 
-# Check if finished
-if st.session_state.current_index >= len(st.session_state.items):
-    st.success("🎉 Thank you! You have completed all items.")
-    st.balloons()
-    
-    # Show download button for results
-    if st.session_state.results:
-        df_results = pd.DataFrame(st.session_state.results)
-        csv = df_results.to_csv(index=False).encode('utf-8')
-        st.download_button("Download My Responses", csv, "my_annotations.csv", "text/csv")
-    st.stop()
+    # Convert to list of dictionaries
+    all_items = df.to_dict('records')
 
-# Get current item
-item = st.session_state.items[st.session_state.current_index]
+    # Setting up session state variables; if they dont exist
+    if 'survey_items' not in st.session_state:
+        random.shuffle(all_items)  # randomly shuffling the purpose prompts
+        st.session_state.survey_items = all_items[:1]  #taking only 1 item per user
+        st.session_state.current_index = 0
+        st.session_state.results = []
+        st.session_state.user_id = f"user_{random.randint(100, 999)}"
 
-# Display progress
-st.progress(st.session_state.current_index / len(st.session_state.items))
-st.write(f"Progress: {st.session_state.current_index + 1}/{len(st.session_state.items)}")
-
-# Show the purpose
-st.subheader("Access Request:")
-st.info(item['purpose'])
-
-# FORM: Batch the 3 ratings into one submission
-with st.form(key="survey_form"):
-    st.write("**Rate this request on the following scales:**")
-    
-    # Question 1: Seniority
-    seniority = st.slider(
-        "1. What seniority level does this request appear to come from?",
-        min_value=1, max_value=7, value=4,
-        help="1 = Very Junior, 7 = Very Senior"
+#Starting up the main consent page for users to select
+def consent_page():
+    st.write("Welcome to this survey!")
+    st.write("Before we continue...")
+    consent = st.radio(
+        "Do you consent to participate?",
+        options=["Yes, I consent", "No, I do not consent"],
+        index=0,
+        horizontal = False
     )
+    if st.button("Continue"):
+        if consent == "Yes, I consent":
+            st.session_state.page = 'survey'
+            st.rerun()
+        else:
+            st.write("Thank you for your time. You may close this page.")
+            st.stop()
     
-    # Question 2: Hastiness
-    hastiness = st.slider(
-        "2. How formal or hasty is this request?",
-        min_value=1, max_value=7, value=4,
-        help="1 = Very Hasty, 7 = Very Formal"
+# to show completion page when survey is done
+def show_completion_page():
+    st.write("Thank you for completing the survey! :)")
+
+    st.write("Download your results:")
+    survey_results_df = pd.DataFrame(st.session_state.results)
+    results_csv = survey_results_df.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="Download Results as CSV",
+        data=results_csv,
+        file_name=f"human_survey_results_{st.session_state.user_id}.csv",
+        mime='csv',
     )
+
+#setting up the survey
+def main_survey():
+    init_session_state()  # initialising the session state
+
+     # checking if survey is complete
+    if st.session_state.current_index >= len(st.session_state.survey_items):
+        show_completion_page()
+        return
     
-    # Question 3: Meaning Preservation
-    meaning_preserved = st.slider(
-        "3. How well does this request preserve the original meaning?",
-        min_value=1, max_value=7, value=4,
-        help="1 = Completely Different, 7 = Identical"
-    )
+    # get the current item
+    item = st.session_state.survey_items[st.session_state.current_index]
+    current = st.session_state.current_index + 1
+    total = len(st.session_state.survey_items)
+
+    # showing progress bar
+    st.write(f"Progress: {current} / {total}")
+    st.progress(current / total)
+
+    # displaying the access request
+    st.write("Access Request:")
+    st.write(item.get('Purpose', ''))
     
-    # Submit button
-    submitted = st.form_submit_button("Submit & Next")
-    
-    if submitted:
-        # Save the annotation
-        st.session_state.results.append({
-            'user_id': st.session_state.user_id,
-            'item_id': item['id'],
-            'seniority': seniority,
-            'hastiness': hastiness,
-            'meaning_preserved': meaning_preserved,
-            'variation_type': item.get('variation_type', ''),
-        })
+    with st.form(key="survey_form"):
+        st.write("Please answer the following questions:")
         
-        # Move to next item
-        st.session_state.current_index += 1
-        st.rerun()  # Refresh the page to show the next item
+        #Question 1: Testing for seniority
+        seniority = st.radio(
+            "1. What seniority level does this request appear to come from?",
+            options=["Intern", "Junior", "Mid-level", "Senior", "Executive", "C-Suite", "Board"],
+            index=3,
+            horizontal=True
+        )
+        
+        #Question 2: Testing for hastiness
+        hastiness = st.radio(
+            "2. How formal or hasty is this request?",
+            options=["Very Hasty", "Hasty", "Neutral", "Formal", "Very Formal"],
+            index=2,
+            horizontal=True
+        )
+        
+        #Question 3: Testing for meaning preservation
+        #Only showcasing this if the user is exposed to a variation
+        variation_type = item.get('Variation Type', '')
 
-# Add a reset button
-if st.button("🔄 Start Over"):
-    for key in ['items', 'current_index', 'results', 'user_id']:
-        if key in st.session_state:
-            del st.session_state[key]
-    st.rerun()
+        if pd.isna(variation_type):
+            variation_type = ''
+        else:
+            variation_type = str(variation_type).lower()
+
+        # Show the original request only for variations
+        if variation_type not in ['none', '']:
+            st.write("**Original Request:**")
+            st.write(item.get('Purpose', ''))
+
+        
+        if variation_type not in ['none', '']:
+            meaning_preserved = st.radio(
+                "3. How well does this request preserve the original meaning?",
+                options=["Completely Different", "Mostly Different", "Somewhat Different", "Neutral",
+                        "Somewhat Similar", "Mostly Similar", "Identical"],
+                index=3,
+                horizontal=True
+            )
+        else:
+            meaning_preserved = "None - This is the original request"
+        
+        # Submit button
+        submitted = st.form_submit_button("Continue")
+        
+        if submitted:
+            #saving the results to the session state
+            st.session_state.results.append({
+                'ID': item.get('ID', ''),  # saving original ID from dataset
+                'Data Provider': item.get('Data Provider', ''),
+                'Project Name': item.get('Project Name', ''),
+                'Consumer Team': item.get('Consumer Team', ''),
+                'Consumer Name': item.get('Consumer Name', ''),
+                'Consumer Description': item.get('Consumer Description', ''),
+                'Variation Type': item.get('Variation Type', ''),
+                'Variation Value': item.get('Variation Value', ''),
+                'Purpose': item.get('Purpose', ''),
+                'Human Expert: Seniority': seniority,
+                'Human Expert: Hastiness': hastiness,
+                'Human Expert: Meaning Preservation': meaning_preserved,
+            })
+            
+            # Move to next item
+            st.session_state.current_index += 1
+            st.rerun()  # Refresh the page to show the next item
+
+init_session_state()
+if st.session_state.page == 'consent':
+    consent_page()
+elif st.session_state.page == 'survey':
+    main_survey()
+else:
+    show_completion_page()
+
+
+
+
+
+
+
+
