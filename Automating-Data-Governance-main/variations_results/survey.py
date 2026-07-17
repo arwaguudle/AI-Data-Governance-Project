@@ -24,6 +24,7 @@ def init_session_state():
         st.session_state.current_index = 0
         st.session_state.results = []
         st.session_state.user_id = f"user_{random.randint(100, 999)}"
+        st.session_state.page = 'consent'
 
 #Starting up the main consent page for users to select
 def consent_page():
