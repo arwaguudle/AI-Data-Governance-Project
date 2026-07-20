@@ -88,7 +88,7 @@ def main_survey():
         #Question 1: Testing for seniority
         seniority = st.radio(
             "1. What seniority level does this request appear to come from?",
-            options=["Intern", "Junior", "Mid-level", "Senior", "Executive", "C-Suite", "Board"],
+            options=["Intern", "Junior", "Mid-level", "Lead", "Senior", "Director", "Executive/CEO"],
             index=3,
             horizontal=True
         )
@@ -119,8 +119,7 @@ def main_survey():
         if variation_type not in ['none', '']:
             meaning_preserved = st.radio(
                 "3. How well does this request preserve the original meaning?",
-                options=["Completely Different", "Mostly Different", "Somewhat Different", "Neutral",
-                        "Somewhat Similar", "Mostly Similar", "Identical"],
+                options=["Completely Different", "Fairly Different", "Neutral", "Somewhat Similar", "Identical"],
                 index=3,
                 horizontal=True
             )
