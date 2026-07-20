@@ -96,7 +96,7 @@ def main_survey():
         seniority = st.radio(
             "1. What seniority level does this request appear to come from?",
             options=["Intern", "Junior", "Mid-level", "Lead", "Senior", "Director", "Executive/CEO"],
-            index=3,
+            index=None,
             horizontal=True
         )
         
@@ -104,7 +104,7 @@ def main_survey():
         hastiness = st.radio(
             "2. How formal or hasty is this request?",
             options=["Very Hasty", "Hasty", "Neutral", "Formal", "Very Formal"],
-            index=2,
+            index=None,
             horizontal=True
         )
         
@@ -127,7 +127,7 @@ def main_survey():
             meaning_preserved = st.radio(
                 "3. How well does this request preserve the original meaning?",
                 options=["Completely Different", "Fairly Different", "Neutral", "Somewhat Similar", "Identical"],
-                index=3,
+                index=None,
                 horizontal=True
             )
         else:
