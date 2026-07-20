@@ -9,7 +9,7 @@ import random #to generating random variations of the survey
 def load_survey_data():
     script_dir = Path(__file__).parent
     csv_path = script_dir / 'evaluation_results.csv'
-    
+
     if not csv_path.exists():
         st.error(f"File not found. Tried to open: {csv_path}")
         st.stop()
