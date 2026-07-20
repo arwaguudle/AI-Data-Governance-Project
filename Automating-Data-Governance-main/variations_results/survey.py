@@ -7,12 +7,8 @@ import random #to generating random variations of the survey
 #loading the dataset for the survey
 @st.cache_data
 def load_survey_data():
-    # Get the absolute path to the folder where this script is running
     script_dir = Path(__file__).parent
     csv_path = script_dir / 'evaluation_results.csv'
-    
-    # For debugging: print the path (this will show in the Streamlit Cloud logs)
-    st.write(f"Looking for CSV at: {csv_path}")
     
     if not csv_path.exists():
         st.error(f"File not found. Tried to open: {csv_path}")
