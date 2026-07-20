@@ -7,7 +7,7 @@ import random #to generating random variations of the survey
 #loading the dataset for the survey
 @st.cache_data
 def load_survey_data():
-    df = pd.read_csv('/evaluation_results.csv')
+    df = pd.read_csv('variations_results/evaluation_results.csv')
     return df
 
 #initialising the session state
