@@ -40,7 +40,7 @@ def consent_page():
     consent = st.radio(
         "Do you consent to participate?",
         options=["Yes, I consent", "No, I do not consent"],
-        index=0,
+        index=None,
         horizontal = False
     )
     if st.button("Continue"):
