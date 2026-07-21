@@ -118,9 +118,16 @@ def main_survey():
             variation_type = str(variation_type).lower()
 
         # Show the original request only for variations
-        if variation_type not in ['none','']:
+        if variation_type not in ['none', '']:
+
+            original_request = df[
+                (df["ID"] == item["ID"]) &
+                (df["Variation Type"] == "None")
+            ]
+
+        if not original_request.empty:
             st.write("**Original Request:**")
-            st.write(item.get('Purpose', ''))
+            st.write(original_request.iloc[0]["Purpose"])
 
         
         if variation_type not in ['none', '']:
