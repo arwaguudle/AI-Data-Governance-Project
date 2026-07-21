@@ -69,13 +69,16 @@ def show_completion_page():
 
 #setting up the survey
 def main_survey():
-    init_session_state()  # initialising the session state
+    init_session_state()
 
-     # checking if survey is complete
+    # Load the full dataframe
+    df = load_survey_data()
+
+    # checking if survey is complete
     if st.session_state.current_index >= len(st.session_state.survey_items):
         show_completion_page()
         return
-    
+
     # get the current item
     item = st.session_state.survey_items[st.session_state.current_index]
     current = st.session_state.current_index + 1
@@ -85,82 +88,105 @@ def main_survey():
     st.write(f"Progress: {current} / {total}")
     st.progress(current / total)
 
-    # displaying the access request
-    st.write("Access Request:")
-    st.write(item.get('Purpose', ''))
-    
+    # displaying the access request (variation or original)
+    st.write("### Access Request")
+    st.write(item.get("Purpose", ""))
+
     with st.form(key="survey_form"):
+
         st.write("Please answer the following questions:")
-        
-        #Question 1: Testing for seniority
+
+        # Question 1
         seniority = st.radio(
             "1. What seniority level does this request appear to come from?",
-            options=["Intern", "Junior", "Mid-level", "Lead", "Senior", "Director", "Executive/CEO"],
+            options=[
+                "Intern",
+                "Junior",
+                "Mid-level",
+                "Lead",
+                "Senior",
+                "Director",
+                "Executive/CEO",
+            ],
             index=None,
-            horizontal=True
+            horizontal=True,
         )
-        
-        #Question 2: Testing for hastiness
+
+        # Question 2
         hastiness = st.radio(
             "2. How formal or hasty is this request?",
-            options=["Very Hasty", "Hasty", "Neutral", "Formal", "Very Formal"],
+            options=[
+                "Very Hasty",
+                "Hasty",
+                "Neutral",
+                "Formal",
+                "Very Formal",
+            ],
             index=None,
-            horizontal=True
+            horizontal=True,
         )
-        
-        #Question 3: Testing for meaning preservation
-        #Only showcasing this if the user is exposed to a variation
-        variation_type = item.get('Variation Type', '')
+
+        # Determine variation type
+        variation_type = item.get("Variation Type", "")
 
         if pd.isna(variation_type):
-            variation_type = ''
+            variation_type = ""
         else:
             variation_type = str(variation_type).lower()
 
-        # Show the original request only for variations
-        if variation_type not in ['none', '']:
+        # Only show original request if this is a variation
+        if variation_type not in ["", "none"]:
 
+            # Find the original request with the same ID
             original_request = df[
-                (df["ID"] == item["ID"]) &
-                (df["Variation Type"] == "None")
+                (df["ID"] == item["ID"])
+                &
+                (
+                    (df["Variation Type"] == "None")
+                    | (df["Variation Type"].isna())
+                )
             ]
 
-        if not original_request.empty:
-            st.write("**Original Request:**")
-            st.write(original_request.iloc[0]["Purpose"])
+            if not original_request.empty:
+                st.write("### Original Request")
+                st.write(original_request.iloc[0]["Purpose"])
 
-        
-        if variation_type not in ['none', '']:
             meaning_preserved = st.radio(
                 "3. How well does this request preserve the original meaning?",
-                options=["Completely Different", "Fairly Different", "Neutral", "Somewhat Similar", "Identical"],
+                options=[
+                    "Completely Different",
+                    "Fairly Different",
+                    "Neutral",
+                    "Somewhat Similar",
+                    "Identical",
+                ],
                 index=None,
-                horizontal=True
+                horizontal=True,
             )
+
         else:
-            meaning_preserved = "None - This is the original request"
-        
+            meaning_preserved = "None - Original Request"
+
         # Submit button
         submitted = st.form_submit_button("Continue")
-        
+
         if submitted:
-            #saving the results to the session state
+
             st.session_state.results.append({
-                'ID': item.get('ID', ''),  # saving original ID from dataset
-                'Data Provider': item.get('Data Provider', ''),
-                'Project Name': item.get('Project Name', ''),
-                'Consumer Team': item.get('Consumer Team', ''),
-                'Consumer Name': item.get('Consumer Name', ''),
-                'Consumer Description': item.get('Consumer Description', ''),
-                'Variation Type': item.get('Variation Type', ''),
-                'Variation Value': item.get('Variation Value', ''),
-                'Purpose': item.get('Purpose', ''),
-                'Human Expert: Seniority': seniority,
-                'Human Expert: Hastiness': hastiness,
-                'Human Expert: Meaning Preservation': meaning_preserved,
+                "ID": item.get("ID", ""),
+                "Data Provider": item.get("Data Provider", ""),
+                "Project Name": item.get("Project Name", ""),
+                "Consumer Team": item.get("Consumer Team", ""),
+                "Consumer Name": item.get("Consumer Name", ""),
+                "Consumer Description": item.get("Consumer Description", ""),
+                "Variation Type": item.get("Variation Type", ""),
+                "Variation Value": item.get("Variation Value", ""),
+                "Purpose": item.get("Purpose", ""),
+                "Human Expert: Seniority": seniority,
+                "Human Expert: Hastiness": hastiness,
+                "Human Expert: Meaning Preservation": meaning_preserved,
             })
-            
-            # Move to next item
+
             st.session_state.current_index += 1
             st.rerun()  # Refresh the page to show the next item
 
