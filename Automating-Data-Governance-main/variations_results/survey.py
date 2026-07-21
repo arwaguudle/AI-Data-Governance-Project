@@ -107,6 +107,7 @@ def main_survey():
             ],
             index=None,
             horizontal=True,
+            key = f"seniority_{st.session_state.current_index}"
         )
 
         # Question 2
@@ -121,6 +122,7 @@ def main_survey():
             ],
             index=None,
             horizontal=True,
+            key = f"hastiness_{st.session_state.current_index}"
         )
 
         # Determine variation type
@@ -159,6 +161,7 @@ def main_survey():
                 ],
                 index=None,
                 horizontal=True,
+                key = "meaning_{st.session_state.current_index}"
             )
 
         else:
@@ -185,6 +188,15 @@ def main_survey():
             })
 
             st.session_state.current_index += 1
+
+            # Reset radio button values
+            for key in [
+                f"seniority_{st.session_state.current_index}",
+                f"hastiness_{st.session_state.current_index}",
+                f"meaning_{st.session_state.current_index}"
+            ]:
+                if key in st.session_state:
+                    del st.session_state[key]
             st.rerun()  # Refresh the page to show the next item
 
 init_session_state()
