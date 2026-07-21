@@ -137,19 +137,6 @@ def main_survey():
         submitted = st.form_submit_button("Continue")
         
         if submitted:
-            errors = []
-            if seniority is None:
-             errors.append("Please select a seniority level.")
-            if hastiness is None:
-                errors.append("Please select a hastiness level.")
-            if variation_type not in ['none', ''] and meaning_preserved is None:
-                errors.append("Please select a meaning preservation level.")
-
-            if errors:
-                # Show all error messages
-                for error in errors:
-                    st.error(error)
-        else:   
             #saving the results to the session state
             st.session_state.results.append({
                 'ID': item.get('ID', ''),  # saving original ID from dataset
