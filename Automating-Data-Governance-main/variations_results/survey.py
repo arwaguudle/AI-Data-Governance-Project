@@ -64,9 +64,6 @@ def show_completion_page():
         file_name=f"human_survey_results_for{st.session_state.user_id}.csv",
         mime='csv',
     )
-    #sending the csv file to me via email
-    
-
 #setting up the survey
 def main_survey():
     init_session_state()
