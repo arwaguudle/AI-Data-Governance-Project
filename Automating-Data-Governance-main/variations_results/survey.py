@@ -147,7 +147,7 @@ def main_survey():
             ]
 
             if not original_request.empty:
-                st.write("###### Original Request")
+                st.write("###### Original Request:")
                 st.write(original_request.iloc[0]["Purpose"])
 
             meaning_preserved = st.radio(
@@ -155,7 +155,7 @@ def main_survey():
                 options=[
                     "Completely Different",
                     "Fairly Different",
-                    "Neutral",
+                    "Neutral", 
                     "Somewhat Similar",
                     "Identical",
                 ],
