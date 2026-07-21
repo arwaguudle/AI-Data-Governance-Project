@@ -118,7 +118,7 @@ def main_survey():
             variation_type = str(variation_type).lower()
 
         # Show the original request only for variations
-        if variation_type in ['None', '']:
+        if variation_type == ['none', '']:
             st.write("**Original Request:**")
             st.write(item.get('Purpose', ''))
 
