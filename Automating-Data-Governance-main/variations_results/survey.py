@@ -161,7 +161,7 @@ def main_survey():
                 ],
                 index=None,
                 horizontal=True,
-                key = "meaning_{st.session_state.current_index}"
+                key = "meaning_preserved_{st.session_state.current_index}"
             )
 
         else:
@@ -193,7 +193,7 @@ def main_survey():
             for key in [
                 f"seniority_{st.session_state.current_index}",
                 f"hastiness_{st.session_state.current_index}",
-                f"meaning_{st.session_state.current_index}"
+                f"meaning_preserved_{st.session_state.current_index}"
             ]:
                 if key in st.session_state:
                     del st.session_state[key]
