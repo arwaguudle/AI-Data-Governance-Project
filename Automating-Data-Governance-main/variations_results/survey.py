@@ -95,7 +95,7 @@ def main_survey():
 
         # Question 1
         seniority = st.radio(
-            "1. What seniority level does this request appear to come from?",
+            "**1. What seniority level does this request appear to come from?**",
             options=[
                 "Intern",
                 "Junior",
@@ -129,7 +129,7 @@ def main_survey():
 
         st.markdown(
             """
-            <div style="display:flex; justify-content:space-between; font-size:10px;">
+            <div style="display:flex; justify-content:space-between; font-size:16px;">
                 <span>Very Hasty</span>
                 <span>Very Formal</span>
             </div>
@@ -171,8 +171,8 @@ def main_survey():
                 st.write("###### Original Request:")
                 st.write(original_request.iloc[0]["Purpose"])
 
-            st.write("3. How well does this request preserve the original meaning?")
-            col1, col2 = st.columns([1, 5])
+            st.write("**3. How well does this request preserve the original meaning?**")
+            col1, col2 = st.columns([1, 6])
 
             with col1:
                 st.write("Very Different")
