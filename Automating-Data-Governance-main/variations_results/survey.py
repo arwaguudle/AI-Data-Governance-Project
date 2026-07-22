@@ -88,7 +88,7 @@ def main_survey():
     st.markdown("""
     <style>
 
-    /* Only affecting the seniorty Likert Scale to make it match better          
+    /* Only affecting the seniorty Likert Scale to make it match better */        
     .first-likert-scale div[role="radiogroup"]{
         display: flex;
         justify-content: center;
