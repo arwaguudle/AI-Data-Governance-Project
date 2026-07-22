@@ -110,33 +110,40 @@ def main_survey():
             key = f"seniority_{st.session_state.current_index}"
         )
 
-        # Question 2
-        st.write("2. How formal or hasty is this reqeust?")
-        col1,col2 = st.columns([1,5])
+        st.markdown("""
+            <style>
+            div[data-testid="stRadio"] > div {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+            }
 
-        with col1:
-            st.write("Very Hasty")
+            div[data-testid="stRadio"] label {
+                flex: 1;
+                text-align: center;
+            }
+            </style>
+            """, unsafe_allow_html=True)
 
-        with col2:
-            hastiness = st.radio(
-                "",
-                options=[1, 2, 3, 4, 5, 6, 7],
-                index=None,
-                horizontal=True,
-                label_visibility="collapsed",
-                key=f"hastiness_{st.session_state.current_index}"
-            )
-
-        st.write("Very Formal")
+        st.write("**2. How formal or hasty is this request?**")
 
         st.markdown(
             """
-            <div style="display:flex; justify-content:space-between;">
+            <div style="display:flex; justify-content:space-between; font-size:16px;">
                 <span>Very Hasty</span>
                 <span>Very Formal</span>
             </div>
             """,
             unsafe_allow_html=True
+        )
+
+        hastiness = st.radio(
+            "",
+            options=[1, 2, 3, 4, 5, 6, 7],
+            index=None,
+            horizontal=True,
+            label_visibility="collapsed",
+            key=f"hastiness_{st.session_state.current_index}"
         )
 
         # Determine variation type
