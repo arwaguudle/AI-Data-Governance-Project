@@ -175,22 +175,26 @@ def main_survey():
                 st.write(original_request.iloc[0]["Purpose"])
 
             st.write("**3. How well does this request preserve the original meaning?**")
-            col1, col2 = st.columns([1, 6])
+
+            col1, col2 = st.columns([1, 1])
 
             with col1:
                 st.write("Very Different")
 
             with col2:
-                meaning_preserved = st.radio(
-                    "",
-                    options=[1, 2, 3, 4, 5, 6, 7],
-                    index=None,
-                    horizontal=True,
-                    label_visibility="collapsed",
-                    key=f"meaning_preserved_{st.session_state.current_index}"
-                 )
+                st.write(
+                    "<div style='text-align:right'>Very Similar</div>",
+                    unsafe_allow_html=True
+                )
 
-            st.write("Very Similar")
+            meaning_preserved = st.radio(
+                "",
+                options=[1, 2, 3, 4, 5, 6, 7],
+                index=None,
+                horizontal=True,
+                label_visibility="collapsed",
+                key=f"meaning_preserved_{st.session_state.current_index}"
+            )
 
         else:
             meaning_preserved = "None - Original Request"
