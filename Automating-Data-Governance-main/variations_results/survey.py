@@ -87,14 +87,30 @@ def main_survey():
 
     st.markdown("""
     <style>
-    div[data-testid="stRadio"] > div {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        gap: 4px;
-    }
-    """, unsafe_allow_html=True)
 
+    /* Center all horizontal radio groups */
+    div[role="radiogroup"]{
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+    }
+
+    /* Each option takes the same width */
+    div[role="radiogroup"] > label{
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+        max-width: 100px;
+    }
+
+    /* Center the radio button and text */
+    div[role="radiogroup"] label div{
+        justify-content: center;
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
 
     # displaying the access request (variation or original)
     st.write("### Access Request")
