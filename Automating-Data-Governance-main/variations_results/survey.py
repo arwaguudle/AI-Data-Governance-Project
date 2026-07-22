@@ -116,7 +116,7 @@ def main_survey():
     /* Prevent long labels breaking awkwardly */
     div[data-testid="stRadio"] label p {
         text-align: center;
-        font-size: 14px;
+        font-size: 17px;
     }
 
     </style>
