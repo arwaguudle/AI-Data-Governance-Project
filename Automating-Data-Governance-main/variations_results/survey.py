@@ -131,8 +131,9 @@ def main_survey():
         st.write("Please answer the following questions:")
 
         # Question 1
+        st.write("**1. What seniority level does this request appear to come from?**")
         seniority = st.radio(
-            "**1. What seniority level does this request appear to come from?**",
+            "",
             options=[
                 "Intern",
                 "Junior",
