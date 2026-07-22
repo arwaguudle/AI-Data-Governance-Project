@@ -82,36 +82,6 @@ def main_survey():
         width: 100%;
         gap: 4px;
     }
-    div[data-testid="stRadio"] label {
-        flex: 1;
-        text-align: center;
-        background-color: #f0f2f6;
-        border-radius: 8px;
-        padding: 6px 0;
-        margin: 2px 0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        transition: all 0.2s ease;
-        cursor: pointer;
-        font-weight: 500;
-    }
-    div[data-testid="stRadio"] label:hover {
-        background-color: #d0d8e6;
-        transform: scale(1.02);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-    /* Colour each option from red to green */
-    div[data-testid="stRadio"] label:nth-child(1) { background: #ffcccc; }
-    div[data-testid="stRadio"] label:nth-child(2) { background: #ffddbb; }
-    div[data-testid="stRadio"] label:nth-child(3) { background: #ffeeaa; }
-    div[data-testid="stRadio"] label:nth-child(4) { background: #ffffcc; }
-    div[data-testid="stRadio"] label:nth-child(5) { background: #ccffcc; }
-    div[data-testid="stRadio"] label:nth-child(6) { background: #aaffaa; }
-    div[data-testid="stRadio"] label:nth-child(7) { background: #88ff88; }
-    div[data-testid="stRadio"] label:has(input:checked) {
-        border: 2px solid #2c3e50;
-        box-shadow: 0 0 0 2px #2c3e50;
-    }
-    </style>
     """, unsafe_allow_html=True)
 
     st.write("### Access Request")
