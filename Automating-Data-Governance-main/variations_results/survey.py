@@ -88,6 +88,14 @@ def main_survey():
     st.markdown("""
     <style>
 
+    /* Only affecting the seniorty Likert Scale to make it match better          
+    .first-likert-scale div[role="radiogroup"]{
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+        width: 100%;
+    }      
+
     /* Only affect the Likert scales */
     .likert-scale div[role="radiogroup"]{
         display: flex;
@@ -121,6 +129,7 @@ def main_survey():
         st.write("Please answer the following questions:")
 
         # Question 1
+        st.markdown('<div class="first-likert-scale">', unsafe_allow_html=True)
         seniority = st.radio(
             "**1. What seniority level does this request appear to come from?**",
             options=[
