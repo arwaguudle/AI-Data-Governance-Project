@@ -146,6 +146,8 @@ def main_survey():
             key = f"seniority_{st.session_state.current_index}"
         )
 
+        st.markdown("</div>", unsafe_allow_html=True)
+
         #Question 2
         st.write("**2. How formal or hasty is this request?**")
 
