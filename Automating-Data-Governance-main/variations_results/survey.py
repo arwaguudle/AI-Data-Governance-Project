@@ -111,19 +111,23 @@ def main_survey():
         )
 
         # Question 2
-        hastiness = st.radio(
-            "2. How formal or hasty is this request?",
-            options=[
-                "Very Hasty",
-                "Hasty",
-                "Neutral",
-                "Formal",
-                "Very Formal",
-            ],
-            index=None,
-            horizontal=True,
-            key = f"hastiness_{st.session_state.current_index}"
-        )
+        st.write("2. How formal or hasty it this reqeust?")
+        col1,col2 = st.columns([1,5])
+
+        with col1:
+            st.write("Very Hasty")
+
+        with col2:
+            hastiness = st.radio(
+                "",
+                options=[1, 2, 3, 4, 5, 6, 7],
+                index=None,
+                horizontal=True,
+                label_visibility="collapsed",
+                key=f"hastiness_{st.session_state.current_index}"
+            )
+
+        st.write("Very Formal")
 
         # Determine variation type
         variation_type = item.get("Variation Type", "")
@@ -150,19 +154,23 @@ def main_survey():
                 st.write("###### Original Request:")
                 st.write(original_request.iloc[0]["Purpose"])
 
-            meaning_preserved = st.radio(
-                "3. How well does this request preserve the original meaning?",
-                options=[
-                    "Completely Different",
-                    "Fairly Different",
-                    "Neutral", 
-                    "Somewhat Similar",
-                    "Identical",
-                ],
-                index=None,
-                horizontal=True,
-                key = "meaning_preserved_{st.session_state.current_index}"
-            )
+            st.write("3. How well does this request preserve the original meaning?")
+            col1, col2 = st.columns([1, 5])
+
+            with col1:
+                st.write("Very Different")
+
+            with col2:
+                meaning_preserved = st.radio(
+                    "",
+                    options=[1, 2, 3, 4, 5, 6, 7],
+                    index=None,
+                    horizontal=True,
+                    label_visibility="collapsed",
+                    key=f"meaning_preserved_{st.session_state.current_index}"
+                 )
+
+            st.write("Very Similar")
 
         else:
             meaning_preserved = "None - Original Request"
