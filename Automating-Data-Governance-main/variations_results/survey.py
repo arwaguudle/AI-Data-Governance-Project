@@ -101,7 +101,7 @@ def main_survey():
     div[data-testid="stRadio"] > div[role="radiogroup"] > label {
         flex: 1;
         min-width: 90px;
-        max-width: 100px;
+        max-width: 70px;
         text-align: center;
         justify-content: center;
     }
