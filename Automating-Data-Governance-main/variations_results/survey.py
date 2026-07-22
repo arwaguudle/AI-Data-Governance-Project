@@ -88,31 +88,15 @@ def main_survey():
     st.markdown("""
     <style>
 
-    /* Seniority radio */
-    div[data-testid="stRadio"]:nth-of-type(1) div[role="radiogroup"]{
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        width: 100%;
-    }
-
-    /* Hastiness radio */
-    div[data-testid="stRadio"]:nth-of-type(2) div[role="radiogroup"]{
+    /* Center all horizontal radio groups */
+    div[role="radiogroup"]{
         display: flex;
         justify-content: center;
         gap: 70px;
         width: 100%;
     }
 
-    /* Meaning preservation radio */
-    div[data-testid="stRadio"]:nth-of-type(3) div[role="radiogroup"]{
-        display: flex;
-        justify-content: center;
-        gap: 70px;
-        width: 100%;
-    }
-
-    /* Shared styling */
+    /* Each option takes the same width */
     div[role="radiogroup"] > label{
         flex: 1;
         text-align: center;
@@ -120,6 +104,7 @@ def main_survey():
         max-width: 100px;
     }
 
+    /* Center the radio button and text */
     div[role="radiogroup"] label div{
         justify-content: center;
     }
@@ -136,7 +121,6 @@ def main_survey():
         st.write("Please answer the following questions:")
 
         # Question 1
-
         seniority = st.radio(
             "**1. What seniority level does this request appear to come from?**",
             options=[
@@ -153,8 +137,6 @@ def main_survey():
             key = f"seniority_{st.session_state.current_index}"
         )
 
-
-
         #Question 2
         st.write("**2. How formal or hasty is this request?**")
 
@@ -169,7 +151,7 @@ def main_survey():
                 unsafe_allow_html=True
             )
     
-
+        st.markdown('<div class="likert-scale">', unsafe_allow_html=True)
         hastiness = st.radio(
             "",
             options=[1, 2, 3, 4, 5, 6, 7],
@@ -180,7 +162,7 @@ def main_survey():
         
         )
 
-
+        st.markdown("</div>", unsafe_allow_html=True)
 
         # Determine variation type
         variation_type = item.get("Variation Type", "")
@@ -219,7 +201,7 @@ def main_survey():
                     "<div style='text-align:right'>Very Similar</div>",
                     unsafe_allow_html=True
                 )
-
+            st.markdown('<div class="likert-scale">', unsafe_allow_html=True)
 
             meaning_preserved = st.radio(
                 "",
@@ -231,6 +213,7 @@ def main_survey():
             )
 
 
+            st.markdown("</div>", unsafe_allow_html=True)
 
         else:
             meaning_preserved = "None - Original Request"
