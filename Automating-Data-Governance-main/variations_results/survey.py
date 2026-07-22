@@ -88,25 +88,35 @@ def main_survey():
     st.markdown("""
     <style>
 
-    /* Center all horizontal radio groups */
-    div[role="radiogroup"]{
+    /* Center seniority radio buttons */
+    div[data-testid="stRadio"] > div[role="radiogroup"] {
         display: flex;
         justify-content: center;
-        gap: 70px;
+        align-items: center;
+        gap: 15px;
         width: 100%;
     }
 
-    /* Each option takes the same width */
-    div[role="radiogroup"] > label{
+    /* Make each seniority option equal width */
+    div[data-testid="stRadio"] > div[role="radiogroup"] > label {
         flex: 1;
+        min-width: 90px;
+        max-width: 130px;
         text-align: center;
         justify-content: center;
-        max-width: 100px;
     }
 
-    /* Center the radio button and text */
-    div[role="radiogroup"] label div{
-        justify-content: center;
+    /* Center the circle and text vertically */
+    div[data-testid="stRadio"] label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Prevent long labels breaking awkwardly */
+    div[data-testid="stRadio"] label p {
+        text-align: center;
+        font-size: 14px;
     }
 
     </style>
