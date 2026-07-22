@@ -96,7 +96,7 @@ def main_survey():
         gap: 10px;
         width: 100%;
         padding-top: 0px;
-        padding-bottom: 10px;
+        padding-bottom: 0px;
     }
 
     /* Make each seniority option equal width */
