@@ -111,7 +111,7 @@ def main_survey():
         )
 
         # Question 2
-        st.write("2. How formal or hasty it this reqeust?")
+        st.write("2. How formal or hasty is this reqeust?")
         col1,col2 = st.columns([1,5])
 
         with col1:
@@ -128,6 +128,16 @@ def main_survey():
             )
 
         st.write("Very Formal")
+
+        st.markdown(
+            """
+            <div style="display:flex; justify-content:space-between;">
+                <span>Very Hasty</span>
+                <span>Very Formal</span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
         # Determine variation type
         variation_type = item.get("Variation Type", "")
