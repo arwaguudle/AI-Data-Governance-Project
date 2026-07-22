@@ -240,13 +240,13 @@ def main_survey():
 
 
             if seniority is None:
-                st.error("Please select a seniority button before continuing.")
-            elif hastiness is None:
-                st.error("Please select a hastiness button before continuing.")
-            elif variation_type not in ["","none"] and meaning_preserved is None:
-                st.error("Please select how well the vairation request preserves the original meaning before continuing.")
+                errors.append("Please select a seniority button before continuing.")
+            if hastiness is None:
+                errors.append("Please select a hastiness button before continuing.")
+            if variation_type not in ["","none"] and meaning_preserved is None:
+                errors.append("Please select how well the vairation request preserves the original meaning before continuing.")
 
-            elif errors:
+            if errors:
                 for error in errors:
                     st.error(error)
             else:
