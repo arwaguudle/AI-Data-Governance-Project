@@ -92,7 +92,7 @@ def main_survey():
     div[role="radiogroup"]{
         display: flex;
         justify-content: center;
-        gap: 60px;
+        gap: 65px;
         width: 100%;
     }
 
