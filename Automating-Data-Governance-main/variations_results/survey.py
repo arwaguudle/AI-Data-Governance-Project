@@ -95,8 +95,8 @@ def main_survey():
         align-items: center;
         gap: 10px;
         width: 100%;
-        padding-top: -10px;
-        padding-bottom:-10px;
+        padding-top: 0px;
+        padding-bottom:0px;
     }
 
     /* Make each seniority option equal width */
@@ -113,6 +113,7 @@ def main_survey():
         display: flex;
         flex-direction: column;
         align-items: center;
+        gap: 5px;
     }
 
     /* Prevent long labels breaking awkwardly */
