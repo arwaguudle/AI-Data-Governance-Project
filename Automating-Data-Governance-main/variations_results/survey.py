@@ -235,32 +235,43 @@ def main_survey():
 
         if submitted:
 
-            st.session_state.results.append({
-                "ID": item.get("ID", ""),
-                "Data Provider": item.get("Data Provider", ""),
-                "Project Name": item.get("Project Name", ""),
-                "Consumer Team": item.get("Consumer Team", ""),
-                "Consumer Name": item.get("Consumer Name", ""),
-                "Consumer Description": item.get("Consumer Description", ""),
-                "Variation Type": item.get("Variation Type", ""),
-                "Variation Value": item.get("Variation Value", ""),
-                "Purpose": item.get("Purpose", ""),
-                "Human Expert: Seniority": seniority,
-                "Human Expert: Hastiness": hastiness,
-                "Human Expert: Meaning Preservation": meaning_preserved,
-            })
+            #checking if all the required questions have been checked by the users; (otherwise we give them an error message)
 
-            st.session_state.current_index += 1
+            if seniority is None:
+                st.error("Please select a seniority button before continuing.")
+            elif hastiness is None:
+                st.error("Please select a hastiness button before continuing.")
+            elif variation_type not in ["","none"] and meaning_preserved is None:
+                st.error("Please select how well the vairation request preserves the original meaning before continuing.")
+            else:
+            
 
-            # Reset radio button values
-            for key in [
-                f"seniority_{st.session_state.current_index}",
-                f"hastiness_{st.session_state.current_index}",
-                f"meaning_preserved_{st.session_state.current_index}"
-            ]:
-                if key in st.session_state:
-                    del st.session_state[key]
-            st.rerun()  # Refresh the page to show the next item
+                st.session_state.results.append({
+                    "ID": item.get("ID", ""),
+                    "Data Provider": item.get("Data Provider", ""),
+                    "Project Name": item.get("Project Name", ""),
+                    "Consumer Team": item.get("Consumer Team", ""),
+                    "Consumer Name": item.get("Consumer Name", ""),
+                    "Consumer Description": item.get("Consumer Description", ""),
+                    "Variation Type": item.get("Variation Type", ""),
+                    "Variation Value": item.get("Variation Value", ""),
+                    "Purpose": item.get("Purpose", ""),
+                    "Human Expert: Seniority": seniority,
+                    "Human Expert: Hastiness": hastiness,
+                    "Human Expert: Meaning Preservation": meaning_preserved,
+                })
+
+                st.session_state.current_index += 1
+
+                # Reset radio button values
+                for key in [
+                    f"seniority_{st.session_state.current_index}",
+                    f"hastiness_{st.session_state.current_index}",
+                    f"meaning_preserved_{st.session_state.current_index}"
+                ]:
+                    if key in st.session_state:
+                        del st.session_state[key]
+                st.rerun()  # Refresh the page to show the next item
 
 init_session_state()
 if st.session_state.page == 'consent':
