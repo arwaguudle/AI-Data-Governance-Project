@@ -94,14 +94,14 @@ def main_survey():
         justify-content: center;
         align-items: center;
         gap: 15px;
-        width: 70%;
+        width: 100%;
     }
 
     /* Make each seniority option equal width */
     div[data-testid="stRadio"] > div[role="radiogroup"] > label {
         flex: 1;
         min-width: 90px;
-        max-width: 130px;
+        max-width: 100px;
         text-align: center;
         justify-content: center;
     }
