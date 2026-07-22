@@ -93,7 +93,7 @@ def main_survey():
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 15px;
+        gap: 10px;
         width: 100%;
     }
 
