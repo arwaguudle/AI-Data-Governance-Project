@@ -92,7 +92,7 @@ def main_survey():
     div[data-testid="stRadio"]:nth-of-type(1) div[role="radiogroup"]{
         display: flex;
         justify-content: center;
-        gap: 50px;
+        gap: 40px;
         width: 100%;
     }
 
