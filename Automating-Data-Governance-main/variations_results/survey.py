@@ -95,8 +95,8 @@ def main_survey():
         align-items: center;
         gap: 10px;
         width: 100%;
-        padding-top: 0px;
-        padding-bottom: 0px;
+        padding-top: -10px;
+        padding-bottom:-10px;
     }
 
     /* Make each seniority option equal width */
