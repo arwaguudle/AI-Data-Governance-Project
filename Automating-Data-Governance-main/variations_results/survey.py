@@ -100,7 +100,7 @@ def main_survey():
     /* Make each seniority option equal width */
     div[data-testid="stRadio"] > div[role="radiogroup"] > label {
         flex: 1;
-        min-width: 65px;
+        min-width: 70px;
         max-width: 70px;
         text-align: center;
         justify-content: center;
@@ -116,7 +116,7 @@ def main_survey():
     /* Prevent long labels breaking awkwardly */
     div[data-testid="stRadio"] label p {
         text-align: center;
-        font-size: 14px;
+        font-size: 10px;
     }
 
     </style>
