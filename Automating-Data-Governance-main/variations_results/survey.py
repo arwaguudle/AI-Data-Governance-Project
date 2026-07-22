@@ -85,6 +85,21 @@ def main_survey():
     st.write(f"Progress: {current} / {total}")
     st.progress(current / total)
 
+    st.markdown("""
+            <style>
+            div[data-testid="stRadio"] > div {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            div[data-testid="stRadio"] label {
+                flex: 1;
+                text-align: center;
+            }
+            </style>
+            """,unsafe_allow_html = True)
+
     # displaying the access request (variation or original)
     st.write("### Access Request")
     st.write(item.get("Purpose", ""))
@@ -110,32 +125,20 @@ def main_survey():
             key = f"seniority_{st.session_state.current_index}"
         )
 
-        st.markdown("""
-            <style>
-            div[data-testid="stRadio"] > div {
-                display: flex;
-                justify-content: space-between;
-                width: 100%;
-            }
-
-            div[data-testid="stRadio"] label {
-                flex: 1;
-                text-align: center;
-            }
-            </style>
-            """, unsafe_allow_html=True)
-
+        #Question 2
         st.write("**2. How formal or hasty is this request?**")
 
-        st.markdown(
-            """
-            <div style="display:flex; justify-content:space-between; font-size:16px;">
-                <span>Very Hasty</span>
-                <span>Very Formal</span>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        col1,col2 = st.columns([1,1])
+
+        with col1:
+            st.write("Very Hasty")
+
+        with col2:
+            st.write(
+                "<div style='text-align:right'>Very Formal</div>",
+                unsafe_allow_html=True
+            )
+    
 
         hastiness = st.radio(
             "",
