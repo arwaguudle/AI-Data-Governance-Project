@@ -88,8 +88,8 @@ def main_survey():
     st.markdown("""
     <style>
 
-    /* Center all horizontal radio groups */
-    div[role="radiogroup"]{
+    /* Only affect the Likert scales */
+    .likert-scale div[role="radiogroup"]{
         display: flex;
         justify-content: center;
         gap: 70px;
@@ -151,7 +151,7 @@ def main_survey():
                 unsafe_allow_html=True
             )
     
-
+        st.markdown('<div class="likert-scale">', unsafe_allow_html=True)
         hastiness = st.radio(
             "",
             options=[1, 2, 3, 4, 5, 6, 7],
@@ -161,6 +161,8 @@ def main_survey():
             key=f"hastiness_{st.session_state.current_index}"
         
         )
+
+        st.markdown("</div>", unsafe_allow_html=True)
 
         # Determine variation type
         variation_type = item.get("Variation Type", "")
@@ -199,6 +201,7 @@ def main_survey():
                     "<div style='text-align:right'>Very Similar</div>",
                     unsafe_allow_html=True
                 )
+            st.markdown('<div class="likert-scale">', unsafe_allow_html=True)
 
             meaning_preserved = st.radio(
                 "",
@@ -208,6 +211,9 @@ def main_survey():
                 label_visibility="collapsed",
                 key=f"meaning_preserved_{st.session_state.current_index}"
             )
+
+
+            st.markdown("</div>", unsafe_allow_html=True)
 
         else:
             meaning_preserved = "None - Original Request"
