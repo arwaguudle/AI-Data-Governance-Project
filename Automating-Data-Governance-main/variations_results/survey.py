@@ -236,15 +236,20 @@ def main_survey():
         if submitted:
 
             #checking if all the required questions have been checked by the users; (otherwise we give them an error message)
+            errors = []
+
 
             if seniority is None:
                 st.error("Please select a seniority button before continuing.")
-            elif hastiness is None:
+            if hastiness is None:
                 st.error("Please select a hastiness button before continuing.")
-            elif variation_type not in ["","none"] and meaning_preserved is None:
+            if variation_type not in ["","none"] and meaning_preserved is None:
                 st.error("Please select how well the vairation request preserves the original meaning before continuing.")
+
+            if errors:
+                for error in errors:
+                    st.error(error)
             else:
-            
 
                 st.session_state.results.append({
                     "ID": item.get("ID", ""),
