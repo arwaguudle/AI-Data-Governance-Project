@@ -86,19 +86,15 @@ def main_survey():
     st.progress(current / total)
 
     st.markdown("""
-            <style>
-            div[data-testid="stRadio"] > div {
-                display: flex;
-                justify-content: space-between;
-                width: 100%;
-            }
+    <style>
+    div[data-testid="stRadio"] > div {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 4px;
+    }
+    """, unsafe_allow_html=True)
 
-            div[data-testid="stRadio"] label {
-                flex: 1;
-                text-align: center;
-            }
-            </style>
-            """,unsafe_allow_html = True)
 
     # displaying the access request (variation or original)
     st.write("### Access Request")
@@ -147,6 +143,7 @@ def main_survey():
             horizontal=True,
             label_visibility="collapsed",
             key=f"hastiness_{st.session_state.current_index}"
+        
         )
 
         # Determine variation type
