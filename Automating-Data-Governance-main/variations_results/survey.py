@@ -129,7 +129,7 @@ def main_survey():
 
         st.markdown(
             """
-            <div style="display:flex; justify-content:space-between; font-size:16px;">
+            <div style="display:flex; justify-content:space-between; font-size:10px;">
                 <span>Very Hasty</span>
                 <span>Very Formal</span>
             </div>
