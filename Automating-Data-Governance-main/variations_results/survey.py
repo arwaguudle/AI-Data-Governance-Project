@@ -28,7 +28,7 @@ def init_session_state():
     # Setting up session state variables; if they dont exist
     if 'survey_items' not in st.session_state:
         random.shuffle(all_items)  # randomly shuffling the purpose prompts
-        st.session_state.survey_items = all_items[:5]  #taking only 50 item per user
+        st.session_state.survey_items = all_items[:50]  #taking only 50 item per user
         st.session_state.current_index = 0
         st.session_state.results = []
         st.session_state.user_id = f"user_{random.randint(100, 999)}"
@@ -72,15 +72,20 @@ def consent_page():
 # to show completion page when survey is done
 def show_completion_page():
     
-    st.write("Thank you for completing the survey! :)")
+    st.write("##### Thank you for completing the survey! :)")
 
-    st.write("Download your results:")
+    st.write("**Download your results:**")
+    st.write("**Please complete the following steps:**")
+    st.write("1. Click the **Download Results as CSV** button below.")
+    st.write("2. Save the file to your computer.")
+    st.write("3. **Email the CSV file** to: `[arwa.guudle@kcl.ac.uk]`")
+    st.write("---")
     survey_results_df = pd.DataFrame(st.session_state.results)
     results_csv = survey_results_df.to_csv(index=False).encode('utf-8')
     st.download_button(
         label="Download Results as CSV",
         data=results_csv,
-        file_name=f"human_survey_results_for{st.session_state.user_id}.csv",
+        file_name=f"human_survey_results_for_{st.session_state.user_id}.csv",
         mime='csv',
     )
 #setting up the survey
