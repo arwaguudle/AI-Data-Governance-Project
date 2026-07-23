@@ -317,13 +317,6 @@ elif st.session_state.page == 'survey':
     main_survey()
 else:
     show_completion_page()
-init_session_state()
-if st.session_state.page == 'consent':
-    consent_page()
-elif st.session_state.page == 'survey':
-    main_survey()
-else:
-    show_completion_page()
 
 
 
