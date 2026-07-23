@@ -36,6 +36,21 @@ def init_session_state():
 #Starting up the main consent page for users to select
 def consent_page():
     st.write("Welcome to this survey!")
+    st.write("---")
+    st.write("### Instructions")
+    st.write("""
+    - You will see **50 different access requests** (these are modified versions of real data access requests).
+    - For each request, please answer **3 questions**:
+        1. **Seniority:** What level of seniority does the prompt appear to be?
+        2. **Hastiness/Formality:** How formal or hasty is their language?
+        3. **Meaning Preservation:** Does this request preserve the original meaning?
+             (Note: Some access request that might the original so this question will not apply.  )
+    - The survey takes approximately **20-30 minutes**.
+    - Please complete it in **one sitting** (you cannot save and return later).
+    - Your responses are **completely anonymous**.
+    - At the end, you will be asked to **download your responses** and email them to me.
+    """)
+
     st.write("Before we continue...")
     consent = st.radio(
         "Do you consent to participate?",
