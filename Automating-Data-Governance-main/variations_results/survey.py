@@ -28,7 +28,7 @@ def init_session_state():
     # Setting up session state variables; if they dont exist
     if 'survey_items' not in st.session_state:
         random.shuffle(all_items)  # randomly shuffling the purpose prompts
-        st.session_state.survey_items = all_items[:5]  #taking only 50 item per user
+        st.session_state.survey_items = all_items[:50]  #taking only 50 item per user
         st.session_state.current_index = 0
         st.session_state.results = []
         st.session_state.user_id = f"user_{random.randint(100, 999)}"
@@ -85,7 +85,7 @@ def show_completion_page():
     )
 #setting up the survey
 def main_survey():
-    init_session_state()
+    #init_session_state()
 
     # Set question start time (if not already set)
     if 'question_start_time' not in st.session_state:
