@@ -35,9 +35,9 @@ def init_session_state():
 
 #Starting up the main consent page for users to select
 def consent_page():
-    st.write("Welcome to this survey!")
+    st.write("### Welcome to this survey!")
     st.write("---")
-    st.write("### Instructions")
+    st.write("##### Instructions")
     st.write("""
     - You will see **50 different access requests** (these are modified versions of real data access requests).
     - For each request, please answer **3 questions**:
@@ -50,10 +50,11 @@ def consent_page():
     - Your responses are **completely anonymous**.
     - At the end, you will be asked to **download your responses** and email them to me.
     """)
+    st.write("---")
 
     st.write("Before we continue...")
     consent = st.radio(
-        "Do you consent to participate?",
+        "**Do you consent to participate?**",
         options=["Yes, I consent", "No, I do not consent"],
         index=None,
         horizontal = False
