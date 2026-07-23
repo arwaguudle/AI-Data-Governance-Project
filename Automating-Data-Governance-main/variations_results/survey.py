@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from pathlib import Path
 import random #to generating random variations of the survey
+import time #to actually time the individuals went undergoing the survey
 
 
 #loading the dataset for the survey
@@ -27,7 +28,7 @@ def init_session_state():
     # Setting up session state variables; if they dont exist
     if 'survey_items' not in st.session_state:
         random.shuffle(all_items)  # randomly shuffling the purpose prompts
-        st.session_state.survey_items = all_items[:20]  #taking only 20 item per user
+        st.session_state.survey_items = all_items[:5]  #taking only 50 item per user
         st.session_state.current_index = 0
         st.session_state.results = []
         st.session_state.user_id = f"user_{random.randint(100, 999)}"
@@ -62,6 +63,7 @@ def consent_page():
     if st.button("Continue"):
         if consent == "Yes, I consent":
             st.session_state.page = 'survey'
+            st.session_state.start_time = time.time() 
             st.rerun()
         else:
             st.write("Thank you for your time. You may close this page.")
@@ -69,6 +71,7 @@ def consent_page():
     
 # to show completion page when survey is done
 def show_completion_page():
+    
     st.write("Thank you for completing the survey! :)")
 
     st.write("Download your results:")
@@ -83,6 +86,10 @@ def show_completion_page():
 #setting up the survey
 def main_survey():
     init_session_state()
+
+    # Set question start time (if not already set)
+    if 'question_start_time' not in st.session_state:
+        st.session_state.question_start_time = time.time()
 
     # Load the full dataframe
     df = load_survey_data()
@@ -266,6 +273,11 @@ def main_survey():
                 for error in errors:
                     st.error(error)
             else:
+                # Calculate time spent on this question
+                if 'question_start_time' in st.session_state:
+                    question_time = time.time() - st.session_state.question_start_time
+                else:
+                    question_time = 0
 
                 st.session_state.results.append({
                     "ID": item.get("ID", ""),
@@ -278,9 +290,13 @@ def main_survey():
                     "Variation Value": item.get("Variation Value", ""),
                     "Purpose": item.get("Purpose", ""),
                     "Human Expert: Seniority": seniority,
-                    "Human Expert: Hastiness": hastiness,
-                    "Human Expert: Meaning Preservation": meaning_preserved,
+                    "Human Expert: Hastiness (1: Very Hasty | 7: Very Formal)": hastiness,
+                    "Human Expert: Meaning Preservation (1: Very Different | 7: Very Similar)": meaning_preserved,
+                    "Time on Question (seconds)": round(question_time, 2),
                 })
+
+                # Reset timer for next question
+                st.session_state.question_start_time = time.time()
 
                 st.session_state.current_index += 1
 
@@ -294,6 +310,13 @@ def main_survey():
                         del st.session_state[key]
                 st.rerun()  # Refresh the page to show the next item
 
+init_session_state()
+if st.session_state.page == 'consent':
+    consent_page()
+elif st.session_state.page == 'survey':
+    main_survey()
+else:
+    show_completion_page()
 init_session_state()
 if st.session_state.page == 'consent':
     consent_page()
