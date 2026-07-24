@@ -147,11 +147,6 @@ def show_completion_page():
             ]
             rows_to_save.append(row)
         
-        rows_to_save.append([
-            'TOTAL_TIME', '', '', '', '', '', '', '', f'Total time: {total_time_str}', 
-            '', '', '', '', '', total_seconds
-        ])
-        
         with st.spinner("Saving your responses..."):
             save_to_google_sheets(rows_to_save)
     
