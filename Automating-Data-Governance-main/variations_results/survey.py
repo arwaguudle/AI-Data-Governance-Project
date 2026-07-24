@@ -86,6 +86,7 @@ def save_to_google_sheets(results_data):
         #there's no headers so we shall add them 
         if len(existing_records) == 0:
             headers = [
+                "User ID",
                 "ID",
                 "Data Provider",
                 "Project Name",
@@ -104,7 +105,6 @@ def save_to_google_sheets(results_data):
             ]
             sheet.append_row(headers)
         
-        # --- APPEND DATA ROWS ---
         for row in results_data:
             sheet.append_row(row)
             
@@ -114,7 +114,7 @@ def save_to_google_sheets(results_data):
 #showing completion page when survey is done
 def show_completion_page():
     
-    # Calculate total time
+    #calcluating total time
     if 'start_time' in st.session_state:
         total_seconds = round(time.time() - st.session_state.start_time, 2)
         minutes = int(total_seconds // 60)
@@ -124,11 +124,12 @@ def show_completion_page():
         total_seconds = 0
         total_time_str = "Not recorded"
     
-    # Save to Google Sheets
+    #saving to Google sheets
     if st.session_state.results:
         rows_to_save = []
         for result in st.session_state.results:
             row = [
+                result.get('User ID', ''),
                 result.get('ID', ''),
                 result.get('Data Provider', ''),
                 result.get('Project Name', ''),
@@ -146,6 +147,8 @@ def show_completion_page():
                 result.get('Total Elapsed Time (seconds)', ''),
             ]
             rows_to_save.append(row)
+            #adding a space
+            rows_to_save.append("")
         
         with st.spinner("Saving your responses..."):
             save_to_google_sheets(rows_to_save)
@@ -368,6 +371,7 @@ def main_survey():
                     total_time_so_far = 0
 
                 st.session_state.results.append({
+                    "User ID": st.session_state.user_id,
                     "ID": item.get("ID", ""),
                     "Data Provider": item.get("Data Provider", ""),
                     "Project Name": item.get("Project Name", ""),
