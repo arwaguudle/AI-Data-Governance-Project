@@ -148,7 +148,7 @@ def show_completion_page():
             ]
             rows_to_save.append(row)
             #adding a space
-            rows_to_save.append("")
+
         
         with st.spinner("Saving your responses..."):
             save_to_google_sheets(rows_to_save)
