@@ -76,7 +76,8 @@ def consent_page():
 def save_to_google_sheets(results_data):
     try:
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+        creds_dict = dict(st.secrets["gcp_service_account"])
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
         client = gspread.authorize(creds)
         sheet = client.open("Survey Participants").sheet1
         
@@ -130,14 +131,11 @@ def show_completion_page():
             save_to_google_sheets(rows_to_save)
     
     st.write("##### Thank you for completing the survey! :)")
-    
-    st.write(f"**Total time taken:** {total_time_str}")
-    st.write("---")
-    
+
     st.write("**Your responses have been recorded successfully!**")
     st.write("You may now close this page.")
     
-    # Optional backup download
+    #and if it all goes wrong with the CSV file
     st.write("---")
     st.write("**Download a backup of your responses (optional):**")
     survey_results_df = pd.DataFrame(st.session_state.results)
