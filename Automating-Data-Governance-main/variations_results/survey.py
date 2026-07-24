@@ -47,7 +47,9 @@ def consent_page():
         3. **Meaning Preservation:** Does this request preserve the original meaning?
              (Note: Some access request that might the original so this question will not apply.  )
     - The survey should take approximately **20-30 minutes** for you to complete.
-    - Please complete it in all the way through. (you cannot save and return later).
+    - There are **no right or wrong answers** —just answer based on your first impression.
+    - **Please don't rush or guess randomly!!** Your honest responses are crucial to this research.
+    - You **cannot save and return later**, so please complete it in one sitting.
     - Your responses are **completely anonymous**.
     - At the end, you will be asked to **download your responses** and email them to me.
     """)
