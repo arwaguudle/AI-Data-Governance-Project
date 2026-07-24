@@ -81,8 +81,33 @@ def save_to_google_sheets(results_data):
         client = gspread.authorize(creds)
         sheet = client.open("Survey Participants").sheet1
         
+        existing_records = sheet.get_all_records()
+        
+        #there's no headers so we shall add them 
+        if len(existing_records) == 0:
+            headers = [
+                "ID",
+                "Data Provider",
+                "Project Name",
+                "Consumer Team",
+                "Consumer Name",
+                "Consumer Description",
+                "Variation Type",
+                "Variation Value",
+                "Purpose (truncated)",
+                "AI Experts (Final Decision)",
+                "Human Expert: Seniority",
+                "Human Expert: Hastiness (1: Very Hasty | 7: Very Formal)",
+                "Human Expert: Meaning Preservation (1: Very Different | 7: Very Similar)",
+                "Time on Question (seconds)",
+                "Total Elapsed Time (seconds)",
+            ]
+            sheet.append_row(headers)
+        
+        # --- APPEND DATA ROWS ---
         for row in results_data:
             sheet.append_row(row)
+            
     except Exception as e:
         st.error(f"Error saving data: {e}")
 
