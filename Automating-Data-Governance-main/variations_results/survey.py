@@ -1,4 +1,6 @@
 import streamlit as st
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 from pathlib import Path
 import random #to generating random variations of the survey
@@ -28,7 +30,7 @@ def init_session_state():
     # Setting up session state variables; if they dont exist
     if 'survey_items' not in st.session_state:
         random.shuffle(all_items)  # randomly shuffling the purpose prompts
-        st.session_state.survey_items = all_items[:50]  #taking only 50 item per user
+        st.session_state.survey_items = all_items[:2]  #taking only 50 item per user
         st.session_state.current_index = 0
         st.session_state.results = []
         st.session_state.user_id = f"user_{random.randint(100, 999)}"
@@ -51,7 +53,6 @@ def consent_page():
     - **Please don't rush or guess randomly!!** Your honest responses are crucial to this research.
     - You **cannot save and return later**, so please complete it in one sitting.
     - Your responses are **completely anonymous**.
-    - At the end, you will be asked to **download your responses** and email them to me.
     """)
     st.write("---")
 
@@ -71,25 +72,83 @@ def consent_page():
             st.write("Thank you for your time. You may close this page.")
             st.stop()
     
+# Save responses to Google Sheets
+def save_to_google_sheets(results_data):
+    try:
+        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+        creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+        client = gspread.authorize(creds)
+        sheet = client.open("Survey Participants").sheet1
+        
+        for row in results_data:
+            sheet.append_row(row)
+    except Exception as e:
+        st.error(f"Error saving data: {e}")
+
 #showing completion page when survey is done
 def show_completion_page():
     
+    # Calculate total time
+    if 'start_time' in st.session_state:
+        total_seconds = round(time.time() - st.session_state.start_time, 2)
+        minutes = int(total_seconds // 60)
+        seconds = int(total_seconds % 60)
+        total_time_str = f"{minutes} minute(s) and {seconds} second(s)"
+    else:
+        total_seconds = 0
+        total_time_str = "Not recorded"
+    
+    # Save to Google Sheets
+    if st.session_state.results:
+        rows_to_save = []
+        for result in st.session_state.results:
+            row = [
+                result.get('ID', ''),
+                result.get('Data Provider', ''),
+                result.get('Project Name', ''),
+                result.get('Consumer Team', ''),
+                result.get('Consumer Name', ''),
+                result.get('Consumer Description', ''),
+                result.get('Variation Type', ''),
+                result.get('Variation Value', ''),
+                result.get('Purpose', '')[:100],
+                result.get('AI Experts', ''),
+                result.get('Human Expert: Seniority', ''),
+                result.get('Human Expert: Hastiness (1: Very Hasty | 7: Very Formal)', ''),
+                result.get('Human Expert: Meaning Preservation (1: Very Different | 7: Very Similar)', ''),
+                result.get('Time on Question (seconds)', ''),
+                result.get('Total Elapsed Time (seconds)', ''),
+            ]
+            rows_to_save.append(row)
+        
+        rows_to_save.append([
+            'TOTAL_TIME', '', '', '', '', '', '', '', f'Total time: {total_time_str}', 
+            '', '', '', '', '', total_seconds
+        ])
+        
+        with st.spinner("Saving your responses..."):
+            save_to_google_sheets(rows_to_save)
+    
     st.write("##### Thank you for completing the survey! :)")
-
-    st.write("**Download your results:**")
-    st.write("**Please complete the following steps:**")
-    st.write("1. Click the **Download Results as CSV** button below.")
-    st.write("2. Save the file to your computer.")
-    st.write("3. **Email the CSV file** to: `[arwa.guudle@kcl.ac.uk]`")
+    
+    st.write(f"**Total time taken:** {total_time_str}")
     st.write("---")
+    
+    st.write("**Your responses have been recorded successfully!**")
+    st.write("You may now close this page.")
+    
+    # Optional backup download
+    st.write("---")
+    st.write("**Download a backup of your responses (optional):**")
     survey_results_df = pd.DataFrame(st.session_state.results)
     results_csv = survey_results_df.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="Download Results as CSV",
+        label="Download Results as CSV (Backup)",
         data=results_csv,
-        file_name=f"human_survey_results_for_{st.session_state.user_id}.csv",
+        file_name=f"survey_responses_backup_{st.session_state.user_id}.csv",
         mime='csv',
     )
+
 #setting up the survey
 def main_survey():
     #init_session_state()
@@ -330,11 +389,3 @@ elif st.session_state.page == 'survey':
     main_survey()
 else:
     show_completion_page()
-
-
-
-
-
-
-
-
