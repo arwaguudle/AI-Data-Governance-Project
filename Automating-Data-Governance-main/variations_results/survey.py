@@ -28,7 +28,7 @@ def init_session_state():
     # Setting up session state variables; if they dont exist
     if 'survey_items' not in st.session_state:
         random.shuffle(all_items)  # randomly shuffling the purpose prompts
-        st.session_state.survey_items = all_items[:50]  #taking only 50 item per user
+        st.session_state.survey_items = all_items[:3]  #taking only 50 item per user
         st.session_state.current_index = 0
         st.session_state.results = []
         st.session_state.user_id = f"user_{random.randint(100, 999)}"
@@ -46,8 +46,8 @@ def consent_page():
         2. **Hastiness/Formality:** How formal or hasty is their language?
         3. **Meaning Preservation:** Does this request preserve the original meaning?
              (Note: Some access request that might the original so this question will not apply.  )
-    - The survey takes approximately **20-30 minutes**.
-    - Please complete it in **one sitting** (you cannot save and return later).
+    - The survey should take approximately **20-30 minutes** for you to complete.
+    - Please complete it in all the way through. (you cannot save and return later).
     - Your responses are **completely anonymous**.
     - At the end, you will be asked to **download your responses** and email them to me.
     """)
@@ -69,7 +69,7 @@ def consent_page():
             st.write("Thank you for your time. You may close this page.")
             st.stop()
     
-# to show completion page when survey is done
+#showing completion page when survey is done
 def show_completion_page():
     
     st.write("##### Thank you for completing the survey! :)")
@@ -92,7 +92,7 @@ def show_completion_page():
 def main_survey():
     #init_session_state()
 
-    # Set question start time (if not already set)
+    #setting the question time
     if 'question_start_time' not in st.session_state:
         st.session_state.question_start_time = time.time()
 
@@ -113,6 +113,7 @@ def main_survey():
     st.write(f"Progress: {current} / {total}")
     st.progress(current / total)
 
+    #making the options look more appealing, and more spacious
     st.markdown("""
     <style>
 
@@ -204,7 +205,6 @@ def main_survey():
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # Determine variation type
         variation_type = item.get("Variation Type", "")
 
         if pd.isna(variation_type):
@@ -212,10 +212,9 @@ def main_survey():
         else:
             variation_type = str(variation_type).lower()
 
-        # Only show original request if this is a variation
+        #only showing original request if this is a variation
         if variation_type not in ["", "none"]:
 
-            # Find the original request with the same ID
             original_request = df[
                 (df["ID"] == item["ID"])
                 &
@@ -278,11 +277,16 @@ def main_survey():
                 for error in errors:
                     st.error(error)
             else:
-                # Calculate time spent on this question
+                #calculating time spent on this question
                 if 'question_start_time' in st.session_state:
                     question_time = time.time() - st.session_state.question_start_time
                 else:
                     question_time = 0
+
+                if 'start_time' in st.session_state:
+                    total_time_so_far = round(time.time() - st.session_state.start_time, 2)
+                else:
+                    total_time_so_far = 0
 
                 st.session_state.results.append({
                     "ID": item.get("ID", ""),
@@ -298,9 +302,10 @@ def main_survey():
                     "Human Expert: Hastiness (1: Very Hasty | 7: Very Formal)": hastiness,
                     "Human Expert: Meaning Preservation (1: Very Different | 7: Very Similar)": meaning_preserved,
                     "Time on Question (seconds)": round(question_time, 2),
+                    "Total Time (seconds)": total_time_so_far,
                 })
 
-                # Reset timer for next question
+                #resetting timer for next question
                 st.session_state.question_start_time = time.time()
 
                 st.session_state.current_index += 1
@@ -313,7 +318,7 @@ def main_survey():
                 ]:
                     if key in st.session_state:
                         del st.session_state[key]
-                st.rerun()  # Refresh the page to show the next item
+                st.rerun()  #for the next page
 
 init_session_state()
 if st.session_state.page == 'consent':
