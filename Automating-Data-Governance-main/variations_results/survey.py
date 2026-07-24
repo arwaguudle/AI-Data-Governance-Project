@@ -166,10 +166,10 @@ def main_survey():
             "",
             options=[
                 "Intern",
-                "Junior",
-                "Mid-level",
+                "Junior Analyst",
+                "Mid-level Analyst",
+                "Senior Manager",
                 "Lead",
-                "Senior",
                 "Director",
                 "Executive/CEO",
             ],
@@ -303,7 +303,7 @@ def main_survey():
                     "Human Expert: Hastiness (1: Very Hasty | 7: Very Formal)": hastiness,
                     "Human Expert: Meaning Preservation (1: Very Different | 7: Very Similar)": meaning_preserved,
                     "Time on Question (seconds)": round(question_time, 2),
-                    "Total Time (seconds)": total_time_so_far,
+                    "Total Elapsed Time (seconds)": total_time_so_far,
                 })
 
                 #resetting timer for next question
