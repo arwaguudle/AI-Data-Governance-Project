@@ -9,7 +9,7 @@ import time #to actually time the individuals went undergoing the survey
 @st.cache_data
 def load_survey_data():
     script_dir = Path(__file__).parent
-    csv_path = script_dir / 'evaluation_results.csv'
+    csv_path = script_dir / 'evaluation_results3.csv'
 
     if not csv_path.exists():
         st.error(f"File not found. Tried to open: {csv_path}")
@@ -28,7 +28,7 @@ def init_session_state():
     # Setting up session state variables; if they dont exist
     if 'survey_items' not in st.session_state:
         random.shuffle(all_items)  # randomly shuffling the purpose prompts
-        st.session_state.survey_items = all_items[:3]  #taking only 50 item per user
+        st.session_state.survey_items = all_items[:50]  #taking only 50 item per user
         st.session_state.current_index = 0
         st.session_state.results = []
         st.session_state.user_id = f"user_{random.randint(100, 999)}"
