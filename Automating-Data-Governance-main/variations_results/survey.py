@@ -5,6 +5,7 @@ import pandas as pd
 from pathlib import Path
 import random #to generating random variations of the survey
 import time #to actually time the individuals went undergoing the survey
+import math #to handle NaN values
 
 
 #loading the dataset for the survey
@@ -30,7 +31,7 @@ def init_session_state():
     # Setting up session state variables; if they dont exist
     if 'survey_items' not in st.session_state:
         random.shuffle(all_items)  # randomly shuffling the purpose prompts
-        st.session_state.survey_items = all_items[:2]  #taking only 50 item per user
+        st.session_state.survey_items = all_items[:10]  #taking only 50 item per user
         st.session_state.current_index = 0
         st.session_state.results = []
         st.session_state.user_id = f"user_{random.randint(100, 999)}"
@@ -105,8 +106,17 @@ def save_to_google_sheets(results_data):
             ]
             sheet.append_row(headers)
         
+        # Clean NaN values before saving
         for row in results_data:
-            sheet.append_row(row)
+            cleaned_row = []
+            for value in row:
+                if value is None:
+                    cleaned_row.append("")
+                elif isinstance(value, float) and math.isnan(value):
+                    cleaned_row.append("")
+                else:
+                    cleaned_row.append(value)
+            sheet.append_row(cleaned_row)
             
     except Exception as e:
         st.error(f"Error saving data: {e}")
@@ -129,22 +139,22 @@ def show_completion_page():
         rows_to_save = []
         for result in st.session_state.results:
             row = [
-                result.get('User ID', ''),
-                result.get('ID', ''),
-                result.get('Data Provider', ''),
-                result.get('Project Name', ''),
-                result.get('Consumer Team', ''),
-                result.get('Consumer Name', ''),
-                result.get('Consumer Description', ''),
-                result.get('Variation Type', ''),
-                result.get('Variation Value', ''),
-                result.get('Purpose', '')[:100],
-                result.get('AI Final Decision', ''),
-                result.get('Human Expert: Seniority', ''),
-                result.get('Human Expert: Hastiness (1: Very Hasty | 7: Very Formal)', ''),
-                result.get('Human Expert: Meaning Preservation (1: Very Different | 7: Very Similar)', ''),
-                result.get('Time on Question (seconds)', ''),
-                result.get('Total Elapsed Time (seconds)', ''),
+                result.get('User ID', '') or '',
+                result.get('ID', '') or '',
+                result.get('Data Provider', '') or '',
+                result.get('Project Name', '') or '',
+                result.get('Consumer Team', '') or '',
+                result.get('Consumer Name', '') or '',
+                result.get('Consumer Description', '') or '',
+                result.get('Variation Type', '') or '',
+                result.get('Variation Value', '') or '',
+                (result.get('Purpose', '') or '')[:100],
+                result.get('AI Final Decision', '') or '',
+                result.get('Human Expert: Seniority', '') or '',
+                result.get('Human Expert: Hastiness (1: Very Hasty | 7: Very Formal)', '') or '',
+                result.get('Human Expert: Meaning Preservation (1: Very Different | 7: Very Similar)', '') or '',
+                result.get('Time on Question (seconds)', '') or '',
+                result.get('Total Elapsed Time (seconds)', '') or '',
             ]
             rows_to_save.append(row)
             #adding a space
