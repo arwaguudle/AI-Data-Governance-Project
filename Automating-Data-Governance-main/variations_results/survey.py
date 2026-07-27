@@ -41,7 +41,7 @@ def init_session_state():
         
         # Shuffle and select 50 unique items for this user
         random.shuffle(available_items)
-        selected_items = available_items[:2]  #taking only 50 item per user
+        selected_items = available_items[:50]  #taking only 50 item per user
 
         
         # Mark these items as used
