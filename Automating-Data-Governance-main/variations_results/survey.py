@@ -35,17 +35,26 @@ def init_session_state():
         if 'used_item_ids' not in st.session_state:
             st.session_state.used_item_ids = set()
         
-        # Filtering out items that have already been used
-        available_items = [item for item in all_items if item.get('ID') not in st.session_state.used_item_ids]
+        # Track which specific variation IDs have been used
+        if 'used_variation_ids' not in st.session_state:
+            st.session_state.used_variation_ids = set()
         
+        # Filtering out items that have already been used
+        # Use a unique key: ID + Variation Value to track specific variations
+        available_items = []
+        for item in all_items:
+            item_key = f"{item.get('ID')}_{item.get('Variation Value', '')}"
+            if item_key not in st.session_state.used_variation_ids:
+                available_items.append(item)
         
         # Shuffle and select 50 unique items for this user
         random.shuffle(available_items)
         selected_items = available_items[:50]  #taking only 50 item per user
-
         
         # Mark these items as used
         for item in selected_items:
+            item_key = f"{item.get('ID')}_{item.get('Variation Value', '')}"
+            st.session_state.used_variation_ids.add(item_key)
             st.session_state.used_item_ids.add(item.get('ID'))
         
         # Store in session state
@@ -291,7 +300,7 @@ def main_survey():
                 "Director",
                 "Executive/CEO",
             ],
-            index=2,
+            index=None,
             horizontal=True,
             key = f"seniority_{st.session_state.current_index}"
         )
@@ -314,7 +323,7 @@ def main_survey():
         hastiness = st.radio(
             "",
             options=[1, 2, 3, 4, 5, 6, 7],
-            index=2,
+            index=None,
             horizontal=True,
             label_visibility="collapsed",
             key=f"hastiness_{st.session_state.current_index}"
@@ -363,7 +372,7 @@ def main_survey():
             meaning_preserved = st.radio(
                 "",
                 options=[1, 2, 3, 4, 5, 6, 7],
-                index=2,
+                index=None,
                 horizontal=True,
                 label_visibility="collapsed",
                 key=f"meaning_preserved_{st.session_state.current_index}"
