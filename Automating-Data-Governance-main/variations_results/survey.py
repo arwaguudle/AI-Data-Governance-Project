@@ -61,7 +61,7 @@ def consent_page():
     st.write("##### Instructions")
     st.write("""
     - You will see **50 different access requests** (these are modified versions of real data access requests).
-    - For each request, please read each one of them and answer the following**3 questions**:
+    - For each request, please read each one of them and answer the following **3 questions**:
         1. **Seniority:** What level of seniority does the prompt appear to be?
         2. **Hastiness/Formality:** How formal or hasty is their language?
         3. **Meaning Preservation:** Does this request preserve the original meaning?
