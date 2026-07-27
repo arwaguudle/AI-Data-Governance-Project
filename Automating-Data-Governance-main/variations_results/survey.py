@@ -41,7 +41,8 @@ def init_session_state():
         
         # Shuffle and select 50 unique items for this user
         random.shuffle(available_items)
-        selected_items = available_items[:50]  #taking only 50 item per user
+        selected_items = available_items[:1]  #taking only 50 item per user
+        
         
         # Mark these items as used
         for item in selected_items:
@@ -71,7 +72,7 @@ def consent_page():
     - **Please don't rush or guess randomly!!** Your honest responses are crucial to this research.
     - You **cannot save and return later**, so please complete it in one sitting.
     - Your responses are **completely anonymous**.
-    - Your responses will be automtically saved; At the end, the survey will be saved automatically; however, should there be any errors occurring, please download the CSV file and email it to me at: [arwa.guudle@kcl.ac.uk] 
+    - At the end, the survey will be saved automatically; however, should there be any errors occurring, please download the CSV file and email it to me at: [arwa.guudle@kcl.ac.uk] 
     """)
     st.write("---")
 
@@ -192,6 +193,7 @@ def show_completion_page():
     st.write("You may now close this page.")
     
     #and if it all goes wrong with the CSV file
+    st.write("**ONLY DO THIS IF AN ERROR OCCURS**")
     st.write("---")
     st.write("**Download a backup of your responses (optional):**")
     survey_results_df = pd.DataFrame(st.session_state.results)
