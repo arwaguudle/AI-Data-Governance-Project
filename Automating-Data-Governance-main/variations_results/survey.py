@@ -138,6 +138,11 @@ def show_completion_page():
     if st.session_state.results:
         rows_to_save = []
         for result in st.session_state.results:
+            # Get variation type and replace empty with "none"
+            variation_type = result.get('Variation Type', '') or ''
+            if variation_type == '' or variation_type is None:
+                variation_type = 'none'
+            
             row = [
                 result.get('User ID', '') or '',
                 result.get('ID', '') or '',
@@ -146,7 +151,7 @@ def show_completion_page():
                 result.get('Consumer Team', '') or '',
                 result.get('Consumer Name', '') or '',
                 result.get('Consumer Description', '') or '',
-                result.get('Variation Type', '') or '',
+                variation_type,  # <-- Now uses the cleaned value
                 result.get('Variation Value', '') or '',
                 (result.get('Purpose', '') or '')[:100],
                 result.get('AI Final Decision', '') or '',
