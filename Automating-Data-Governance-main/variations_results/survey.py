@@ -193,8 +193,9 @@ def show_completion_page():
     st.write("You may now close this page.")
     
     #and if it all goes wrong with the CSV file
-    st.write("**ONLY DO THIS IF AN ERROR OCCURS**")
     st.write("---")
+    st.write("##### ONLY DO THIS IF AN ERROR OCCURS! ")
+    st.write(" ")
     st.write("**Download a backup of your responses (optional):**")
     survey_results_df = pd.DataFrame(st.session_state.results)
     results_csv = survey_results_df.to_csv(index=False).encode('utf-8')
