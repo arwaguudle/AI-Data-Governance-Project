@@ -30,8 +30,25 @@ def init_session_state():
 
     # Setting up session state variables; if they dont exist
     if 'survey_items' not in st.session_state:
-        random.shuffle(all_items)  # randomly shuffling the purpose prompts
-        st.session_state.survey_items = all_items[:10]  #taking only 50 item per user
+        
+        # Track which items have been used across all users
+        if 'used_item_ids' not in st.session_state:
+            st.session_state.used_item_ids = set()
+        
+        # Filtering out items that have already been used
+        available_items = [item for item in all_items if item.get('ID') not in st.session_state.used_item_ids]
+        
+        
+        # Shuffle and select 50 unique items for this user
+        random.shuffle(available_items)
+        selected_items = available_items[:50]  #taking only 50 item per user
+        
+        # Mark these items as used
+        for item in selected_items:
+            st.session_state.used_item_ids.add(item.get('ID'))
+        
+        # Store in session state
+        st.session_state.survey_items = selected_items
         st.session_state.current_index = 0
         st.session_state.results = []
         st.session_state.user_id = f"user_{random.randint(100, 999)}"
