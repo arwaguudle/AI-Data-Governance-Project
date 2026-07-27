@@ -113,7 +113,7 @@ def save_to_google_sheets(results_data):
                 if value is None:
                     cleaned_row.append("none")
                 elif isinstance(value, float) and math.isnan(value):
-                    cleaned_row.append("")
+                    cleaned_row.append("none")
                 else:
                     cleaned_row.append(value)
             sheet.append_row(cleaned_row)
