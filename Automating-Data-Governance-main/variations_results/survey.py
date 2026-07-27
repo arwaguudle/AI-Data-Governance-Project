@@ -66,11 +66,12 @@ def consent_page():
         2. **Hastiness/Formality:** How formal or hasty is their language?
         3. **Meaning Preservation:** Does this request preserve the original meaning?
              (Note: Some access request that might the original so this question will not apply.  )
-    - The survey should take approximately **20-30 minutes** for you to complete.
+    - The survey should take approximately **30 minutes** for you to complete.
     - There are **no right or wrong answers** —just answer based on your first impression.
     - **Please don't rush or guess randomly!!** Your honest responses are crucial to this research.
     - You **cannot save and return later**, so please complete it in one sitting.
     - Your responses are **completely anonymous**.
+    - Your responses will be automtically saved; At the end, the survey will be saved automatically; however, should there be any errors occurring, please download the CSV file and email it to me at: [arwa.guudle@kcl.ac.uk] 
     """)
     st.write("---")
 
