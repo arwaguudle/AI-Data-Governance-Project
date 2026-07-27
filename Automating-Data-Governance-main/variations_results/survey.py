@@ -332,6 +332,7 @@ def main_survey():
 
         st.markdown("</div>", unsafe_allow_html=True)
 
+
         variation_type = item.get("Variation Type", "")
 
         if pd.isna(variation_type):
