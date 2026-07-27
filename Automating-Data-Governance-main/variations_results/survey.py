@@ -291,7 +291,7 @@ def main_survey():
                 "Director",
                 "Executive/CEO",
             ],
-            index=None,
+            index=2,
             horizontal=True,
             key = f"seniority_{st.session_state.current_index}"
         )
@@ -314,7 +314,7 @@ def main_survey():
         hastiness = st.radio(
             "",
             options=[1, 2, 3, 4, 5, 6, 7],
-            index=None,
+            index=2,
             horizontal=True,
             label_visibility="collapsed",
             key=f"hastiness_{st.session_state.current_index}"
@@ -363,7 +363,7 @@ def main_survey():
             meaning_preserved = st.radio(
                 "",
                 options=[1, 2, 3, 4, 5, 6, 7],
-                index=None,
+                index=2,
                 horizontal=True,
                 label_visibility="collapsed",
                 key=f"meaning_preserved_{st.session_state.current_index}"
