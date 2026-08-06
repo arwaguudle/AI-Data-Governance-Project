@@ -15,7 +15,7 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 #was also told to make a virtual environment (.env)
 
-#setting up the variation instructions
+#setting up the different linguistic variations instructions
 seniority_vars = [
     "intern",
     "junior analyst",
@@ -110,7 +110,7 @@ def main():
 
             original_id = row.get('ID', '')
 
-            # Original request (no variation)
+            # For the CSV file; Original request (no variations)
             original_row = {
                 'ID': original_id,
                 'Data Provider': row.get('Data Provider', ''),
@@ -126,7 +126,7 @@ def main():
             }
             all_insurance_results.append(original_row)
 
-            # Generate combined variations (seniority + hastiness)
+            #Generating combined variations (seniority + hastiness)
             for seniority in seniority_vars:
                 for hastiness in hastiness_vars:
                     print(f"  Combined: {seniority} + {hastiness[:20]}...")
@@ -160,7 +160,7 @@ def main():
 
             original_id = row.get('ID', '')
 
-            # Original request (no variation)
+            # Original request for ecommerce (no variation)
             original_row = {
                 'ID': original_id,
                 'Data Provider': row.get('Data Provider', ''),
@@ -176,7 +176,7 @@ def main():
             }
             all_ecommerce_results.append(original_row)
 
-            # Generate combined variations (seniority + hastiness)
+            #Generating combined variations (seniority + hastiness)
             for seniority in seniority_vars:
                 for hastiness in hastiness_vars:
                     print(f"  Combined: {seniority} + {hastiness[:20]}...")
@@ -213,6 +213,7 @@ def main():
             'Realistic?',
             'Decision'
         ]
+        #Saving the insurance results
         OUTPUT_INSURANCE_CSV.parent.mkdir(parents=True, exist_ok=True)
         with open(OUTPUT_INSURANCE_CSV, 'w', newline='', encoding='utf-8') as f: #Saving the insurance results
             writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -230,7 +231,7 @@ def main():
         print(f"Saved {len(all_ecommerce_results)} rows to {OUTPUT_ECOMMERCE_CSV}")
 
 
-    # JOINT RESULTS (combine both)
+    # and now combining both result
     all_results = all_insurance_results + all_ecommerce_results
     if all_results:
         JOINT_OUTPUT_CSV.parent.mkdir(parents=True, exist_ok=True)
