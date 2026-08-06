@@ -11,12 +11,12 @@ from dotenv import load_dotenv
 load_dotenv()
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-# File paths
+#loading the scripted txt files for Governance AI
 SYSTEM_PROMPT_FILE = Path("governanceai/systemprompt.txt")
 USER_PROMPT_FILE = Path("governanceai/userprompt.txt")
 
 
-# Load prompts
+#loading prompts
 def load_prompts():
     with open(SYSTEM_PROMPT_FILE, 'r', encoding='utf-8') as f:
         system_prompt = f.read()
@@ -24,7 +24,7 @@ def load_prompts():
         user_template = f.read()
     return system_prompt, user_template
 
-# Build request
+#Building the 
 def build_access_request(row):
     return {
         "title": row.get('Project Name', ''),
@@ -41,7 +41,7 @@ def build_access_request(row):
         "expected_decision": "accept"
     }
 
-# Evaluate one request
+#Evaluating a request
 def evaluate(system_prompt, user_template, request):
     user_prompt = user_template.format(
         accessRequest=json.dumps(request, indent=2),
@@ -56,7 +56,7 @@ def evaluate(system_prompt, user_template, request):
     
     try:
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4o", #using this model
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
@@ -76,7 +76,7 @@ def evaluate(system_prompt, user_template, request):
     
 INPUT_CSV = Path("variations_results/combined_variations.csv")
 OUTPUT_CSV = Path("variations_results/evaluation_results3.csv")
-# Load CSV
+#Loading the CSV files
 def load_csv(csv_path):
     if not csv_path.exists():
         print(f"Warning: {csv_path} not found")
@@ -85,7 +85,7 @@ def load_csv(csv_path):
         reader = csv.DictReader(f)
         return list(reader)
 
-# Majority vote
+# Majority voting
 def majority_vote(decisions):
     accept = decisions.count('Accept')
     reject = decisions.count('Reject')
@@ -121,7 +121,7 @@ def main():
         decisions = []
         warnings = []
         
-        # Run 3 times
+        # Running the AI decisions 3 times
         for run in range(1, 4):
             request = build_access_request(row)
             decision, warning = evaluate(system_prompt, user_template, request)
@@ -132,7 +132,7 @@ def main():
         # Get majority vote
         final, vote = majority_vote(decisions)
         
-        # Build result row
+        # Build result row for the final CSV files
         new_row = dict(row)
         new_row['AI Decision 1'] = decisions[0]
         new_row['AI Decision 2'] = decisions[1]
@@ -145,7 +145,7 @@ def main():
         
         results.append(new_row)
     
-    # Save results
+    # Saving the results to CSV file
     if results:
         fieldnames = list(results[0].keys())
         with open(OUTPUT_CSV, 'w', newline='', encoding='utf-8') as f:
@@ -156,7 +156,7 @@ def main():
         print(f"\nResults saved to {OUTPUT_CSV}")
         print(f"Time taken: {time.time() - start_time:.2f} seconds")
         
-        # Summary
+        #Final Summary
         accepted = sum(1 for r in results if r.get('Final AI Decision') == 'Accept')
         rejected = sum(1 for r in results if r.get('Final AI Decision') == 'Reject')
         ties = sum(1 for r in results if r.get('Final AI Decision') == 'Tie')
