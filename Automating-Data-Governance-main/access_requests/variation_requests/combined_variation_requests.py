@@ -92,9 +92,9 @@ def main():
         print("No data found.")
         return
 
-    # Testing for 3 requests before testing it all 
-    #insurance_requests = insurance_requests[:3]
-    #ecommerce_requests = ecommerce_requests[:3]
+    # Testing for 1 requests before testing it all 
+    insurance_requests = insurance_requests[:1]
+    ecommerce_requests = ecommerce_requests[:1]
 
     all_insurance_results = []
     all_ecommerce_results = []
