@@ -70,7 +70,7 @@ INSURANCE_CSV = Path("expert_opinions/insurance-expert_assessment.csv")
 ECOMMERCE_CSV = Path("expert_opinions/ecommerce-expert_assessment.csv")
 OUTPUT_INSURANCE_CSV = Path("variations_results/insurance_combined_variations.csv")
 OUTPUT_ECOMMERCE_CSV = Path("variations_results/ecommerce_combined_variations.csv")
-JOINT_OUTPUT_CSV = Path("variations_results/combined_variations.csv")
+JOINT_OUTPUT_CSV = Path("variations_results/combined_variations_demonstration.csv")
 
 #loading the files
 def load_csv(csv_path):
@@ -247,3 +247,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    
